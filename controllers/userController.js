@@ -1,32 +1,5 @@
-const bcrypt = require('bcrypt')
+
 const User = require('../models/userModel.js')
-
-
-
-//! regestering user 
-
-const registerUser = async (req, res) => {
-    try {
-        const { email, password, role } = req.body;
-        
-        //? Generate salt and hash password
-        const saltRounds = 10;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const hashedPassword = bcrypt.hashSync(password, salt);
-
-        //? add the user the the database
-        let user = await User.create({
-            email : email,
-            hash: hashedPassword,
-            salt: salt,
-            role: role,
-        })
-
-        res.status(201).json({ message: `User ${user._id} registered successfully !!` , data : {id:user._id,email:user.email} });
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to register user', error: error.message });
-    }
-};
 
 
 const getAllUsers = async (req, res) => {
@@ -50,10 +23,6 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch users',data:null, error: error.message });
     }
 }
-
-
-
-
 
 
 const getUser = async(req,res)=>{
@@ -106,24 +75,30 @@ const deleteUser = async (req,res)=>{
 }
 
 
-
-//! b9a ghir patch fl controller hada !! 
-
 const patchUser = async (req,res)=>{
     try {
         const {id:UserId} = req.params
-        const User = await User.findOneAndUpdate({_id:UserId},req.body,{
+        const user = await User.findOneAndUpdate({_id:UserId},req.body,{
             new: true ,
             runValidators : true
         })
-        if(!User){
-            res.status(404).json({msg:`there ain't no User with the id of : ${UserId}`})
+        if(!user){
+            return res.status(404).json({message:`the id : ${UserId} isn't attached to any user !!`, data:null})
         }
-        else res.status(201).json({User})
-    } catch (err) {
+
+        const formattedUser = {
+            _id: user._id,
+            username: user.username ? user.username : null,
+            email: user.email,
+            role: user.role,
+            registrationDate: user.registrationDate
+        }
+
+        res.status(201).json({message:`User was patched successfully !!`, data:formattedUser})
+    } catch (error) {
         res.status(500).json({ message: 'Failed to patch user !!',data:null, error: error.message })
     }
 }
 
 
-module.exports={registerUser,getAllUsers,getUser,patchUser,deleteUser}
+module.exports={getAllUsers,getUser,patchUser,deleteUser}
