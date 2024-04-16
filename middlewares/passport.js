@@ -13,7 +13,8 @@ const Verify = async (email, password, cb) => {
         const user = await User.findOne({ email: email })
         if (!user) { return cb(null, false,{message:`the email of ${email} is not attached to a user`}) }
         const isValid = validPass(password, user.hash, user.salt)
-        if (isValid) return cb(null, user,{message:`User have been successfully authenticated !!`})
+        if (isValid){
+            return cb(null, user ,{message:`User have been successfully authenticated !!`})}
         else return cb(null, false , {message:`password is incorrect !!`})
     } catch (error) {
         return cb(error)

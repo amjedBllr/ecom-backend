@@ -2,12 +2,15 @@
 const express = require('express')
 const passport = require('passport')
 
-
+//? utils
 require('dotenv').config()
+require('./utils/sessionCleanup.js')
+
 
 //? internal packages
 const connectDb = require('./db/connect.js')
 const session = require('./middlewares/session.js')
+const restrict = require('./middlewares/authorization.js')
 
 //? routers
 const users = require('./routes/userRoute.js')
@@ -27,19 +30,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-
-
 //? routes
 app.use('/api/v1/auth',auth)
 
-app.use('/api/v1/users',users)
+//! just an example for attempting purposes ... change it mb3d
+app.use('/api/v1/users',restrict('client'),users)
 
 app.get('/',(req,res)=>{
     if(req.isAuthenticated()){res.send('you are logged in')}
     else {res.send('you are NOOOT logged in')}
 })
-
-
 
 
 

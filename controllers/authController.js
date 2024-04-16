@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt')
 const passport = require('../middlewares/passport.js')
 const User = require('../models/userModel.js')
 
-
 const registerUser = async (req, res) => {
     try {
         const { email, password, role } = req.body
@@ -27,20 +26,28 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            return res.status(500).json({ message: 'Internal server error' , error : info.message});
-        }
-        if (!user) {
-            return res.status(401).json({ message: 'Authentication failed', error : info.message });
-        }
-        req.logIn(user, (err) => {
+    if(!req.isAuthenticated()){
+        passport.authenticate('local', (err, user, info) => {
             if (err) {
-                return next(err);
+                return res.status(500).json({ message: 'Internal server error' , error : info.message});
             }
-            return res.status(200).json({ message: 'Login successful' });
-        });
-    })(req, res, next);
+            if (!user) {
+                return res.status(401).json({ message: 'Authentication failed', error : info.message });
+            }
+            req.logIn(user, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                else{
+                    return res.status(200).json({ message: 'Login successful' });
+                }
+                
+            });
+        })(req, res, next);
+    }
+    else{
+       return res.status(401).json({ message: 'you are already logged in !! , stop messing with the api bud !!' });
+    }
 };
 
 const logoutUser = (req, res) => {
@@ -49,7 +56,10 @@ const logoutUser = (req, res) => {
             if (err) {
                 return res.status(500).json({ message: 'Logout failed', error: err });
             }
-            return res.status(200).json({ message: 'Logout successful' });
+            else{
+                return res.status(200).json({ message: 'Logout successful' });
+            }
+            
         })
     }
    else return res.status(401).json({ message: 'you were not even logged in , stop messing with URLs bud !!' });
