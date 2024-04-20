@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const questionSchema = mongoose.Schema({
   userId: { type: String, required: true },
+  content: {type : String , required: true},
   questionDate: { type: Date, default: Date.now },
   questionStatus: { type: String, enum:['pending','Processing','treated'] ,default:'pending' }
 });
