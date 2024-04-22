@@ -15,7 +15,7 @@ const restrict = require('./middlewares/authorization.js')
 //? routers
 const users = require('./routes/userRoute.js')
 const auth = require('./routes/authRoute.js')
-
+const sellers = require('./routes/sellerRoute.js')
 
 
 
@@ -34,6 +34,7 @@ app.use(passport.session());
 
 app.use('/api/v1/auth',auth)
 app.use('/api/v1/users',users)
+app.use('/api/v1/sellers',sellers)
 
 
 
