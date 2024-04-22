@@ -31,15 +31,9 @@ app.use(passport.session());
 
 
 //? routes
+
 app.use('/api/v1/auth',auth)
-
-//! just an example for attempting purposes ... change it mb3d
-app.use('/api/v1/users',restrict('client'),users)
-
-app.get('/',(req,res)=>{
-    if(req.isAuthenticated()){res.send('you are logged in')}
-    else {res.send('you are NOOOT logged in')}
-})
+app.use('/api/v1/users',users)
 
 
 

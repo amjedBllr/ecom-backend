@@ -2,12 +2,17 @@
 const User = require('../models/userModel.js')
 
 
+
+
+
+//*get all users function
+
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.find({});
 
         if (users.length === 0) {
-            return res.status(404).json({ message: 'No user exists currently !!' , data:null});
+            return res.status(404).json({ message: 'No user exists currently !!' , error:'No user exists currently !!' , data:[]});
         }
 
         const formattedUsers = users.map((user) => ({
@@ -25,24 +30,41 @@ const getAllUsers = async (req, res) => {
 }
 
 
+
+
+
+//* get one user function 
+
 const getUser = async(req,res)=>{
     try{
+
         let {id:UserId} = req.params
-        const user = await User.findOne({_id:UserId})
+        let currentUser = req.user._id
+        let role = req.user.role
 
-        if(!user){
-            return res.status(404).json({message:`the id : ${UserId} isn't attached to any user !!`, data:null})
+        if(((['client', 'seller'].includes(role) && (UserId == currentUser)) || role === 'admin')){
+
+            const user = await User.findOne({_id:UserId})
+
+            if(!user){
+                return res.status(404).json({message:`Could't find any user`, data:[]})
+            }
+
+            const formattedUser = {
+                _id: user._id,
+                username: user.username ? user.username : null,
+                email: user.email,
+                role: user.role,
+                registrationDate: user.registrationDate
+            }
+
+            return res.status(201).json({message:`User was fetched successfully !!`, data:formattedUser})
+        }
+        else{
+            return res.status(401).json({ message: 'Access denied !!', error: `user is not authorized to ${req.method} other users data` });
         }
 
-        const formattedUser = {
-            _id: user._id,
-            username: user.username ? user.username : null,
-            email: user.email,
-            role: user.role,
-            registrationDate: user.registrationDate
-        }
-
-        res.status(201).json({message:`User was fetched successfully !!`, data:formattedUser})
+        
     }
     catch(error){
         res.status(500).json({ message: 'Failed to fetch user !!',data:null, error: error.message })
@@ -50,51 +72,90 @@ const getUser = async(req,res)=>{
 }
 
 
+
+
+
+
+//* delete a user function 
+
 const deleteUser = async (req,res)=>{
     try{
         let {id:UserId} = req.params
-        const user = await User.findOneAndDelete({_id:UserId})
+        let currentUser = req.user._id
+        let role = req.user.role
 
-         if(!user){
-            return res.status(404).json({message:`the id : ${UserId} isn't attached to any user !!`, data:null})
+        if(((['client', 'seller'].includes(role) && (UserId == currentUser)) || role === 'admin')){
+            const user = await User.findOneAndDelete({_id:UserId})
+
+            if(!user){
+                return res.status(404).json({message:`Could't find any user` , data:[]})
+            }
+
+            const formattedUser = {
+                _id: user._id,
+                username: user.username ? user.username : null,
+                email: user.email,
+                role: user.role,
+                registrationDate: user.registrationDate
+            }
+
+            return res.status(201).json({message:`User was removed successfully !!`, data:formattedUser})
         }
-
-        const formattedUser = {
-            _id: user._id,
-            username: user.username ? user.username : null,
-            email: user.email,
-            role: user.role,
-            registrationDate: user.registrationDate
+        else{
+            return res.status(401).json({ message: 'Access denied !!', error: `user is not authorized to ${req.method} other users data` });
         }
-
-        res.status(201).json({message:`User was removed successfully !!`, data:formattedUser})
+        
     }
     catch(error){
-        res.status(500).json({ message: 'Failed to remove user !!',data:null, error: error.message })
+        return res.status(500).json({ message: 'Failed to remove user !!',data:null, error: error.message })
     }
 }
 
 
+
+
+
+
+
+
+
+
+//* patch user function
+
 const patchUser = async (req,res)=>{
     try {
-        const {id:UserId} = req.params
-        const user = await User.findOneAndUpdate({_id:UserId},req.body,{
-            new: true ,
-            runValidators : true
-        })
-        if(!user){
-            return res.status(404).json({message:`the id : ${UserId} isn't attached to any user !!`, data:null})
+
+        let {id:UserId} = req.params
+        let currentUser = req.user._id
+        let role = req.user.role
+
+        if(((['client', 'seller'].includes(role) && (UserId == currentUser)) || role === 'admin')){
+
+            const user = await User.findOneAndUpdate({_id:UserId},req.body,{
+                new: true ,
+                runValidators : true
+            })
+
+            if(!user){
+                return res.status(404).json({message:`Could't find any user`, data:[]})
+            }
+    
+            const formattedUser = {
+                _id: user._id,
+                username: user.username ? user.username : null,
+                email: user.email,
+                role: user.role,
+                registrationDate: user.registrationDate
+            }
+    
+            res.status(201).json({message:`User was patched successfully !!`, data:formattedUser})
+
+        }
+        else{
+            return res.status(401).json({ message: 'Access denied !!', error: `user is not authorized to ${req.method} other users data` });
         }
 
-        const formattedUser = {
-            _id: user._id,
-            username: user.username ? user.username : null,
-            email: user.email,
-            role: user.role,
-            registrationDate: user.registrationDate
-        }
 
-        res.status(201).json({message:`User was patched successfully !!`, data:formattedUser})
     } catch (error) {
         res.status(500).json({ message: 'Failed to patch user !!',data:null, error: error.message })
     }
