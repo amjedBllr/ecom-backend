@@ -82,16 +82,19 @@ const deleteSeller = async (req,res)=>{
         let currentUser = req.user._id
         let role = req.user.role
         const seller = await Seller.findOne({ _id: SellerId })
+
+        if(!seller){
+            return res.status(404).json({message:`Seller do not exist` , data:[]})
+        }
+
         const objectId = new ObjectId(seller.userId)
+
 
         if(((role==="seller" && (objectId.equals(currentUser))) || role == "admin")){
 
             const seller = await Seller.findOneAndDelete({_id:SellerId})
 
-            if(!seller){
-                return res.status(404).json({message:`Could't find any Seller` , data:[]})
-            }
-
+            
             const formattedSeller = {
                 _id: seller._id,
                 userId: seller.userId,

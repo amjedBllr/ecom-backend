@@ -1,8 +1,7 @@
 
 const User = require('../models/userModel.js')
-
-
-
+const Seller= require('../models/sellerModel.js')
+const Client = require('../models/clientModel.js')
 
 
 //*get all users function
@@ -50,12 +49,22 @@ const getUser = async(req,res)=>{
                 return res.status(404).json({message:`Could't find any user`, data:[]})
             }
 
-            const formattedUser = {
+            let formattedUser = {
                 _id: user._id,
                 username: user.username ? user.username : null,
                 email: user.email,
                 role: user.role,
                 registrationDate: user.registrationDate
+            }
+
+            if (user.role==='seller'){
+                const seller = await Seller.findOne({userId:user._id})
+                formattedUser = {...formattedUser ,"seller_id":seller._id}
+            }
+
+            if (user.role==='client'){
+                const client = await Client.findOne({userId:user._id})
+                formattedUser = {...formattedUser ,"client_id":client._id}
             }
 
             return res.status(201).json({message:`User was fetched successfully !!`, data:formattedUser})
@@ -91,12 +100,22 @@ const deleteUser = async (req,res)=>{
                 return res.status(404).json({message:`Could't find any user` , data:[]})
             }
 
-            const formattedUser = {
+            let formattedUser = {
                 _id: user._id,
                 username: user.username ? user.username : null,
                 email: user.email,
                 role: user.role,
                 registrationDate: user.registrationDate
+            }
+
+            if (user.role==='seller'){
+                const seller = await Seller.findOneAndDelete({userId:user._id})
+                formattedUser = {...formattedUser ,"seller_id":seller._id}
+            }
+
+            if (user.role==='client'){
+                const client = await Client.findOneAndDelete({userId:user._id})
+                formattedUser = {...formattedUser ,"client_id":client._id}
             }
 
             return res.status(201).json({message:`User was removed successfully !!`, data:formattedUser})
