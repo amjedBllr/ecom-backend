@@ -32,8 +32,6 @@ const getSeller = async (req, res) => {
         const currentUser = req.user;
         const role = currentUser.role;
 
-        console.log(`${SellerId}--${currentUser._id}--${role}`);
-
         const seller = await Seller.findOne({ _id: SellerId });
 
         if (!seller) {
@@ -75,6 +73,7 @@ const getSeller = async (req, res) => {
 
 
 //* delete a Seller function 
+//!hadi balak manhtajohach (logically) bsah khliha brk
 
 const deleteSeller = async (req,res)=>{
     try{
@@ -149,7 +148,7 @@ const patchSeller = async (req,res)=>{
                 businessName: seller.businessName
             }
         
-            res.status(201).json({message:`Seller was patched successfully !!`, data:formattedSeller})
+            res.status(200).json({message:`Seller was patched successfully !!`, data:formattedSeller})
         }
         else{
             return res.status(401).json({ message: 'Access denied !!', error: `Seller is not authorized to ${req.method} other seller data` });

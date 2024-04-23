@@ -1,10 +1,16 @@
 const express = require('express')
 const method = require('../controllers/clientController.js')
+const restrict = require('../middlewares/authorization.js')
 
 const router = express.Router()
 
-router.route('/').get(method.getAllClients).post(method.postClient)
-router.route('/:id').get(method.getClient).patch(method.patchClient).delete(method.deleteClient)
+router.route('/')
+    .get(restrict('admin'),method.getAllClients)
+
+router.route('/:id')
+    .get(restrict(),method.getClient)
+    .patch(restrict('admin','client'),method.patchClient)
+    .delete(restrict('admin','client'),method.deleteClient)
 
 
 module.exports=router
