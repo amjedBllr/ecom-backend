@@ -1,10 +1,12 @@
 {
   "dependencies": {
+    "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "mongodb": "^6.5.0",
     "mongoose": "^8.2.4",
     "node-cron": "^3.0.3",
     "passport": "^0.7.0",

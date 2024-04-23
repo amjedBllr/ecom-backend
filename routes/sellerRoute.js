@@ -15,10 +15,8 @@ router.route('/:id')
 
 module.exports=router
 
-/*
-*client: getOne (return stuffs brk ... filter al return)
-*seller: getOne (return kolch 3lih (lazm hwa b3d , aw ma3ndouch access llo5rin anyway) mn seller table brk)  , patch (kolsh (lazm ykon howa b3d)) , delete (kolsh hwa b3d)
-*admin: getALL (return kolch) , getOne(kolch) , patch (anything , anyone) , delete (anything , anyone)
-*/
 
-//! return mn seller brk mb3d nchofo kifah ... mb3d blk ndiro fetch wahd khlaf mn 3nd l admin ... hih hkak !!
+
+
+//! balak nzido :id/products route ... 9al /sellers/12341234/products w tkon  restrict()
+//! blak tani lladmin ki yhab ydelete user nzido nb3to mltm b3d request bl axios bach nahiw luser mn l sellers tani , mm for client

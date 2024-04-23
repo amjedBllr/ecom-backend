@@ -12,7 +12,7 @@ const getAllUsers = async (req, res) => {
         const users = await User.find({});
 
         if (users.length === 0) {
-            return res.status(404).json({ message: 'No user exists currently !!' , error:'Could not find any user !' , data:[]});
+            return res.status(404).json({ message: 'Could not find any user !' , data:[]});
         }
 
         const formattedUsers = users.map((user) => ({
