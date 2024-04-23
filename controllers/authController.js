@@ -44,9 +44,15 @@ const registerClient = async (req, res) => {
             id,fullName,phoneNumber,DeliveryAddress,paymentAccountNumber,paymentAccountType
         } = req.body
 
-        //? add client to database
+        const client = await Client.findOne({ userId: id });
 
-        let client = await Client.create({
+        if (client) {
+            return res.status(404).json({ message: `User already registered as a client`, data: [] });
+        }
+
+        //? add client to database
+        else{
+            let client = await Client.create({
                 userId:id ,
                 fullname: fullName,
                 phoneNumber: phoneNumber,
@@ -56,9 +62,11 @@ const registerClient = async (req, res) => {
                 edahabiaNumber: ((paymentAccountType=='edahabia')?paymentAccountNumber:null),
             })
 
-            res.status(201).json({ message: `User ${client._id} registered successfully !!` , data : {client} })
+            res.status(201).json({ message: `client ${client._id} registered successfully !!` , data : {client} })
         }
 
+        }
+        
     catch (error) {
         res.status(500).json({ message: 'Failed to register client', error: error.message })
     }
@@ -74,30 +82,39 @@ const registerSeller = async (req, res) => {
             id,type,name,businessPhoneNumber,businessEmail,address,paymentAccountNumber,paymentAccountType,identification,commerceRegisterNumber
         } = req.body
 
+
+        const seller = await Client.findOne({ userId: id });
+
+        if (seller) {
+            return res.status(404).json({ message: `User already registered as a seller`, data: [] });
+        }
         //? add seller to the database 
 
-        let seller = await Seller.create({
-            userId: id,
-            sellerType: type ,
-            businessName: name,
-            businessAddress: address,
-            businessEmail: businessEmail,
-            businessPhone: businessPhoneNumber,
-            creditCardActivity: ((paymentAccountType=='creditCard')?true:false),
-            paypalActivity: ((paymentAccountType=='paypal')?true:false),
-            edahabiaActivity: ((paymentAccountType=='edahabia')?true:false),
-            creditCardNumber: ((paymentAccountType=='creditCard')?paymentAccountNumber:null),
-            paypalNumber: ((paymentAccountType=='paypal')?paymentAccountNumber:null),
-            edahabiaNumber: ((paymentAccountType=='edahabia')?paymentAccountNumber:null),
-            commerceRegisterNumber: commerceRegisterNumber,
-            identityCard: identification,
-        })
+        else{
+            let seller = await Seller.create({
+                userId: id,
+                sellerType: type ,
+                businessName: name,
+                businessAddress: address,
+                businessEmail: businessEmail,
+                businessPhone: businessPhoneNumber,
+                creditCardActivity: ((paymentAccountType=='creditCard')?true:false),
+                paypalActivity: ((paymentAccountType=='paypal')?true:false),
+                edahabiaActivity: ((paymentAccountType=='edahabia')?true:false),
+                creditCardNumber: ((paymentAccountType=='creditCard')?paymentAccountNumber:null),
+                paypalNumber: ((paymentAccountType=='paypal')?paymentAccountNumber:null),
+                edahabiaNumber: ((paymentAccountType=='edahabia')?paymentAccountNumber:null),
+                commerceRegisterNumber: commerceRegisterNumber,
+                identityCard: identification,
+            })
+    
+                res.status(201).json({ message: `Seller ${seller._id} registered successfully !!` , data : {seller} })
+        }
 
-            res.status(201).json({ message: `User ${seller._id} registered successfully !!` , data : {seller} })
         }
 
     catch (error) {
-        res.status(500).json({ message: 'Failed to register client', error: error.message })
+        res.status(500).json({ message: 'Failed to register seller', error: error.message })
     }
 }
 
@@ -121,14 +138,14 @@ const loginUser = (req, res, next) => {
                 }
                 else{
                     console.log(`user ${user._id} logged in !`)
-                    return res.status(200).json({ message: 'Login successful' });
+                    return res.status(200).json({ message: 'Login successful' , data:{_id:user._id,email:user.email,role:user.role}});
                 }
                 
             });
         })(req, res, next);
     }
     else{
-       return res.status(401).json({ message: 'you are already logged in !! , stop messing with the api bud !!' });
+       return res.status(401).json({ message: 'you are already logged in !! , stop messing with the api bud !!'  });
     }
 };
 
