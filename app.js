@@ -18,10 +18,11 @@ const auth = require('./routes/authRoute.js')
 const sellers = require('./routes/sellerRoute.js')
 const clients = require('./routes/clientRoute.js')
 const categories = require('./routes/PCRoute.js')
+const types = require('./routes/PCTRoute.js')
 
 /*
 const admins = require('./routes/adminRoute.js')
-const types = require('./routes/PCTRoute.js')
+
 const cartItems = require('./routes/cartItemRoute.js')
 const orders = require('./routes/orderRoute.js')
 const notifications = require('./routes/notificationRoute.js')
@@ -49,6 +50,7 @@ app.use('/api/v1/users',users)
 app.use('/api/v1/sellers',sellers)
 app.use('/api/v1/clients',clients)
 app.use('/api/v1/categories',categories)
+app.use('/api/v1/types',types)
 
 
 

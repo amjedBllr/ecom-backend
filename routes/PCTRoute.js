@@ -1,5 +1,6 @@
 const express = require('express')
 const method = require('../controllers/PCTController.js')
+const restrict = require('../middlewares/authorization.js') 
 
 const router = express.Router()
 

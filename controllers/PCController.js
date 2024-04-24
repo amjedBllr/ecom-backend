@@ -1,4 +1,5 @@
 const PC = require('../models/PCModel.js')
+const PCT = require('../models/PCTModel.js')
 
 const getAllPCs = async (req,res)=>{
     try{
@@ -15,6 +16,7 @@ const getAllPCs = async (req,res)=>{
     }
 }
 
+
 const getPC = async(req,res)=>{
     try{
         let {category:categoryName} = req.params
@@ -23,7 +25,18 @@ const getPC = async(req,res)=>{
 
         if(!pc) return res.status(404).json({message:`Could't find any category with that name`, data:[]})
 
-        else return res.status(201).json({message:`Category was fetched successfully !!`, data:pc})
+        else {
+
+            const pct = await PCT.find({categoryName : categoryName})
+
+            let formmedPct = pct.map(t=>{
+                return({_id:t._id , typeName:t.typeName})
+            })
+            
+            let formmedPc = {...pc,category_types:formmedPct}
+
+            return res.status(201).json({message:`Category was fetched successfully !!`, data:{category:formmedPc._doc,category_types:formmedPc.category_types}})
+        } 
     }
     catch(error){
         res.status(500).json({ message: 'Failed to fetch category !!', error: error.message })
