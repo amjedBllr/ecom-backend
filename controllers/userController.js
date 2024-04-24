@@ -45,10 +45,6 @@ const getUser = async(req,res)=>{
 
             const user = await User.findOne({_id:UserId})
 
-            if(!user){
-                return res.status(404).json({message:`Could't find any user`, data:[]})
-            }
-
             let formattedUser = {
                 _id: user._id,
                 username: user.username ? user.username : null,
@@ -67,7 +63,11 @@ const getUser = async(req,res)=>{
                 formattedUser = {...formattedUser ,"client_id":client._id}
             }
 
-            return res.status(201).json({message:`User was fetched successfully !!`, data:formattedUser})
+            if(!user){
+                return res.status(404).json({message:`Could't find any user`, data:[]})
+            }
+
+            else return res.status(200).json({message:`User was fetched successfully !!`, data:formattedUser})
         }
         else{
             return res.status(401).json({ message: 'Access denied !!', error: `user is not authorized to ${req.method} other users data` });
@@ -76,7 +76,7 @@ const getUser = async(req,res)=>{
         
     }
     catch(error){
-        res.status(500).json({ message: 'Failed to fetch user !!',data:null, error: error.message })
+        res.status(500).json({ message: 'Failed to fetch user !!', error: error.message })
     }
 }
 

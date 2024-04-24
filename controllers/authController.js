@@ -47,7 +47,7 @@ const registerClient = async (req, res) => {
         const client = await Client.findOne({ userId: id });
 
         if (client) {
-            return res.status(404).json({ message: `User already registered as a client`, data: [] });
+            return res.status(400).json({ message: `could not register client`, error:`Client already exists` });
         }
 
         //? add client to database
@@ -86,7 +86,7 @@ const registerSeller = async (req, res) => {
         const seller = await Client.findOne({ userId: id });
 
         if (seller) {
-            return res.status(404).json({ message: `User already registered as a seller`, data: [] });
+            return res.status(400).json({ message: `could not register seller`, error:`Seller already exists` });
         }
         //? add seller to the database 
 

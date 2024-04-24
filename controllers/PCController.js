@@ -1,64 +1,89 @@
-const Task = require('../models/PCModel.js')
+const PC = require('../models/PCModel.js')
 
-const getAllTasks = async (req,res)=>{
+const getAllPCs = async (req,res)=>{
     try{
-        const tasks = await Task.find({})
-        res.status(201).json({tasks})}
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const getOneTask = async(req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOne({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
+        const pc = await PC.find({})
+
+        if (pc.length === 0) {
+            return res.status(404).json({ message: 'Could not find any category !' , data:[]});
         }
-        else res.status(201).json({task})
+
+        res.status(200).json({message : 'categories were fetched successfully !!' , data: pc })
     }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const postOneTask = async (req,res)=>{
-    try{
-    let task = await Task.create(req.body)
-    res.status(201).json({task})
-    console.log(`new task added !!`)
-    }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const deleteOneTask = async (req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOneAndDelete({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg : err})
+    catch(error){
+        res.status(500).json({ message: 'Failed to fetch categories', error: error.message });
     }
 }
 
-const patchOneTask = async (req,res)=>{
-    try {
-        const {id:taskId} = req.params
-        const task = await Task.findOneAndUpdate({_id:taskId},req.body,{
+const getPC = async(req,res)=>{
+    try{
+        let {category:categoryName} = req.params
+
+        const pc = await PC.findOne({categoryName : categoryName})
+
+        if(!pc) return res.status(404).json({message:`Could't find any category with that name`, data:[]})
+
+        else return res.status(201).json({message:`Category was fetched successfully !!`, data:pc})
+    }
+    catch(error){
+        res.status(500).json({ message: 'Failed to fetch category !!', error: error.message })
+    }
+}
+
+const postPC = async (req,res)=>{
+    try{
+
+    let pc = await PC.findOne({categoryName:req.body.categoryName})
+
+    if (pc) {
+        return res.status(400).json({ message: `could not add category`, error:`Category already exists` });
+    }
+    else{
+        let pc = await PC.create(req.body)
+        return res.status(201).json({ message: `category added successfully !!` , data : {pc} })
+    }
+
+    }
+    catch(error){
+        res.status(500).json({ message: 'Failed to add category', error: error.message })
+    }
+}
+const deletePC = async (req,res)=>{
+    try{
+        let {category:categoryName} = req.params
+
+        const pc = await PC.deleteOne({categoryName : categoryName})
+
+        if(!pc) return res.status(404).json({message:`Could't find any category with that name`, data:[]})
+
+        else return res.status(200).json({message:`Category was deleted successfully !!`, data:pc})
+    }
+    catch(error){
+        res.status(500).json({ message: 'Failed to delete category !!', error: error.message })
+    }
+}
+
+const patchPC = async (req,res)=>{
+    try{
+        let {category:categoryName} = req.params
+
+        const pc = await PC.findOneAndUpdate({categoryName : categoryName},req.body,{
             new: true ,
             runValidators : true
         })
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    } catch (err) {
-        res.status(500).json({msg : err})
+        
+
+        if(!pc) return res.status(404).json({message:`Could't find any category with that name`, data:[]})
+
+        else return res.status(201).json({message:`Category was patched successfully !!`, data:pc})
+    }
+    catch(error){
+        res.status(500).json({ message: 'Failed to patch category !!', error: error.message })
     }
 }
 
-module.exports={getAllTasks,getOneTask,postOneTask,patchOneTask,deleteOneTask}
+
+
+
+
+module.exports={getAllPCs,getPC,postPC,patchPC,deletePC}

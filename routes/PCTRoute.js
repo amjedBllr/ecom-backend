@@ -3,8 +3,14 @@ const method = require('../controllers/PCTController.js')
 
 const router = express.Router()
 
-router.route('/').get(method.getAllPCTs).post(method.postPCT)
-router.route('/:id').get(method.getPCT).patch(method.patchPCT).delete(method.deletePCT)
+router.route('/')
+    .get(method.getAllPCTs)
+    .post(restrict('admin'),method.postPCT)
+
+router.route('/:type')
+    .get(method.getPCT)
+    .patch(restrict('admin'),method.patchPCT)
+    .delete(restrict('admin'),method.deletePCT)
 
 
 module.exports=router
