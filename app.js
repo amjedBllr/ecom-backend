@@ -1,6 +1,7 @@
 //? external packages
 const express = require('express')
 const passport = require('passport')
+const cors = require('cors')
 
 //? utils
 require('dotenv').config()
@@ -22,7 +23,6 @@ const types = require('./routes/PCTRoute.js')
 
 /*
 const admins = require('./routes/adminRoute.js')
-
 const cartItems = require('./routes/cartItemRoute.js')
 const orders = require('./routes/orderRoute.js')
 const notifications = require('./routes/notificationRoute.js')
@@ -36,6 +36,7 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cors())
 
 app.use(session)
 
@@ -51,6 +52,7 @@ app.use('/api/v1/sellers',sellers)
 app.use('/api/v1/clients',clients)
 app.use('/api/v1/categories',categories)
 app.use('/api/v1/types',types)
+app.use('*',(req,res)=>{res.send('404 , the endpoint do not exist ...')})
 
 
 
