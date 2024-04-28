@@ -41,19 +41,20 @@ const registerClient = async (req, res) => {
 
     try {
         const {
-            id,fullName,phoneNumber,DeliveryAddress,paymentAccountNumber,paymentAccountType
+            fullName,phoneNumber,DeliveryAddress,paymentAccountNumber,paymentAccountType
         } = req.body
 
-        const client = await Client.findOne({ userId: id });
+        const client = await Client.findOne({ userId: req.user._id});
+        const seller = await Client.findOne({ userId: req.user._id });
 
-        if (client) {
-            return res.status(400).json({ message: `could not register client`, error:`Client already exists` });
+        if (client||seller) {
+            return res.status(400).json({ message: `could not register client`, error:`User already registered` });
         }
 
         //? add client to database
         else{
             let client = await Client.create({
-                userId:id ,
+                userId:req.user._id,
                 fullname: fullName,
                 phoneNumber: phoneNumber,
                 shippingAddress: DeliveryAddress,
@@ -79,20 +80,20 @@ const registerSeller = async (req, res) => {
 
     try {
         const {
-            id,type,name,businessPhoneNumber,businessEmail,address,paymentAccountNumber,paymentAccountType,identification,commerceRegisterNumber
+            type,name,businessPhoneNumber,businessEmail,address,paymentAccountNumber,paymentAccountType,identification,commerceRegisterNumber
         } = req.body
 
+        const client = await Client.findOne({ userId: req.user._id});
+        const seller = await Client.findOne({ userId: req.user._id });
 
-        const seller = await Client.findOne({ userId: id });
-
-        if (seller) {
-            return res.status(400).json({ message: `could not register seller`, error:`Seller already exists` });
+        if (client||seller) {
+            return res.status(400).json({ message: `could not register seller`, error:`User already registered` });
         }
         //? add seller to the database 
 
         else{
             let seller = await Seller.create({
-                userId: id,
+                userId: req.user._id,
                 sellerType: type ,
                 businessName: name,
                 businessAddress: address,

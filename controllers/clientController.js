@@ -124,7 +124,9 @@ const patchClient = async (req,res)=>{
 
         if(((role==="client" && (objectId.equals(currentUser))) || role == "admin")){
 
-            const client = await Client.findOneAndUpdate({_id:clientId},req.body,{
+            const { userId, ...updatedFields } = req.body;
+
+            const client = await Client.findOneAndUpdate({_id:clientId},updatedFields,{
                 new: true ,
                 runValidators : true
             })

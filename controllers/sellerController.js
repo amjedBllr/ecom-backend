@@ -132,8 +132,10 @@ const patchSeller = async (req,res)=>{
         const objectId = new ObjectId(seller.userId)
 
         if(((role==="seller" && (objectId.equals(currentUser))) || role == "admin")){
+            
+            const { userId, ...updatedFields } = req.body;
 
-            const seller = await Seller.findOneAndUpdate({_id:SellerId},req.body,{
+            const seller = await Seller.findOneAndUpdate({_id:SellerId},updatedFields,{
                 new: true ,
                 runValidators : true
             })
@@ -156,7 +158,7 @@ const patchSeller = async (req,res)=>{
         
     }
     catch(error){
-        return res.status(500).json({ message: 'Failed to remove Seller !!',data:null, error: error.message })
+        return res.status(500).json({ message: 'Failed to patch Seller !!',data:null, error: error.message })
     }
 }
 

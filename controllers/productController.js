@@ -32,14 +32,14 @@ const getManyProducts = async (req, res) => {
     try {
         const products = await Product.find(conditions)
 
-        if(!product){
-            return res.status(404).json({message:`Could't find any Product`, data:[]})
+        if(products.length<=0){
+            return res.status(404).json({message:`Could't find any Products`, data:[]})
         }
 
         res.status(200).json({message:`Products was fetched successfully !!`, data:products})
 
     } catch (error) {
-        return res.status(500).json({ message: 'Failed to fetch products !!', error: error.message })
+        return res.status(500).json({ message: 'Failed to fetch products !!' , data:null , error: error.message })
     }
 
 }
@@ -59,15 +59,15 @@ const getProduct = async (req, res) => {
 
         const seller = await Seller.findOne({_id : product.sellerId})
         const reviews = await Review.find({productId : product._id})
-        const ratings = []
-        const rating = 0
+        let ratings = []
+        let rating = 0
 
-        if(reviews){
+        if(reviews.length>0){
             ratings = reviews.map(r=>{
                 return(r.rating)
             })
 
-              rating = rating.reduce((accumulator, currentValue) => {
+              rating = ratings.reduce((accumulator, currentValue) => {
                 return accumulator + currentValue;
               }, 0);
 
@@ -75,16 +75,16 @@ const getProduct = async (req, res) => {
         }
 
         let formattedProduct = {
-            ...product ,
+            ...product._doc ,
             sellerName : seller.businessName ,
-            rating : rating ,
+            rating : (reviews) ? rating : 0,
             ratingCount : (reviews)? reviews.length : 0
         }
 
         res.status(200).json({message:`Product was fetched successfully !!`, data:formattedProduct})
 
     } catch (error) {
-        return res.status(500).json({ message: 'Failed to fetch product !!', error: error.message })
+        return res.status(500).json({ message: 'Failed to fetch product !!' , data:null , error: error.message })
     }
 
 }
@@ -93,10 +93,62 @@ const getProduct = async (req, res) => {
 //* patch Product function
 const postProduct = async (req,res)=>{
 
+    const userId = req.user._id
+    const productData = req.body 
+    try {
+
+        const seller = await Seller.findOne({userId : userId})
+
+        let {sellerId, ...data} = productData
+
+        data = {
+            sellerId : seller._id ,
+            ...data
+        }
+    
+        const product = await Product.create(data)
+
+        res.status(201).json({message:`Product was created successfully !!`, data:product})
+        
+    } catch (error) {
+
+        return res.status(500).json({ message: 'Failed to create product !!' , data:null , error: error.message })
+
+    }
 }
 
 //* delete a Product function 
 const deleteProduct = async (req,res)=>{
+    try{
+
+        let {id:ProductId} = req.params
+        let currentUser = req.user._id 
+        let role = req.user.role 
+        let productSellerId
+        let userSellerId
+
+        const product = await Product.findOne({ _id: ProductId })
+        if(product) productSellerId = product.sellerId 
+        const seller = await Seller.findOne({ userId : currentUser })
+        if(seller) userSellerId = seller._id 
+        const objectId = new ObjectId(productSellerId)
+        const samePerson = objectId.equals(userSellerId)
+        
+
+        if( samePerson || role === "admin"){
+
+           const product = await Product.findOneAndDelete({ _id: ProductId })
+
+           if(!product) return res.status(404).json({message:`Could not find any product with this id`, error:'product does not exist', data:null})
+
+           return res.status(200).json({message:`Product was removed successfully !!`, data:product})
+        }
+        
+        else return res.status(401).json({ message: 'Access denied !!', error: `Seller is not authorized to ${req.method} other seller data` });
+   }
+   catch(error){
+       return res.status(500).json({ message: 'Failed to delete product !!' , data:null , error: error.message })
+   }
 
 }
 
@@ -104,49 +156,36 @@ const deleteProduct = async (req,res)=>{
 //* patch Product function
 const patchProduct = async (req,res)=>{
 
+    try{
+
+         let {id:ProductId} = req.params
+         let currentUser = req.user._id 
+         let productSellerId
+         let userSellerId
+ 
+         const product = await Product.findOne({ _id: ProductId })
+         if(product) productSellerId = product.sellerId 
+         const seller = await Seller.findOne({ userId : currentUser })
+         if(seller) userSellerId = seller._id 
+         const objectId = new ObjectId(productSellerId)
+         const samePerson = objectId.equals(userSellerId)
+
+         if(objectId.equals(userSellerId)){
+            const { sellerID, ...updatedFields } = req.body;
+
+            const product = await Product.findOneAndUpdate({ _id: ProductId },
+            updatedFields,{ new: true, runValidators: true })
+
+            return res.status(200).json({message:`Product was patched successfully !!`, data:product})
+         }
+         
+         else return res.status(401).json({ message: 'Access denied !!', error: `Seller is not authorized to ${req.method} other seller data` });
+    }
+    catch(error){
+        return res.status(500).json({ message: 'Failed to patch product !!' , data:null , error: error.message })
+    }
 }
 
 
-
-
-
-
-
-/**
- *     try{
-        let {id:ProductId} = req.params
-        let currentUser = req.user._id
-        let role = req.user.role
-        const Product = await Product.findOne({ _id: ProductId })
-        const objectId = new ObjectId(Product.userId)
-
-        if(((role==="Product" && (objectId.equals(currentUser))) || role == "admin")){
-
-            const Product = await Product.findOneAndUpdate({_id:ProductId},req.body,{
-                new: true ,
-                runValidators : true
-            })
-        
-            if(!Product){
-                return res.status(404).json({message:`Could't find any Product`, data:[]})
-            }
-        
-            const formattedProduct = {
-                _id: Product._id,
-                userId: Product.userId,
-                businessName: Product.businessName
-            }
-        
-            res.status(200).json({message:`Product was patched successfully !!`, data:formattedProduct})
-        }
-        else{
-            return res.status(401).json({ message: 'Access denied !!', error: `Product is not authorized to ${req.method} other Product data` });
-        }
-        
-    }
-    catch(error){
-        return res.status(500).json({ message: 'Failed to remove Product !!',data:null, error: error.message })
-    }
- */
 
 module.exports={getManyProducts,postProduct,getProduct,patchProduct,deleteProduct}

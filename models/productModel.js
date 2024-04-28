@@ -17,10 +17,10 @@ const productSchema = mongoose.Schema({
   creationDate: { type: Date, default: Date.now },
   sizes: [String],
   colors: [String],
-  weight: Number,
-  dimensions: String,
-  material: String,
-  brand: String
+  weight: [String],
+  dimensions: [String],
+  material: [String],
+  brand: [String]
 });
 
 const Product = mongoose.model('Product', productSchema);
