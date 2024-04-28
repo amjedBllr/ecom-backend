@@ -22,14 +22,14 @@ const categories = require('./routes/PCRoute.js')
 const types = require('./routes/PCTRoute.js')
 
 /*
-const admins = require('./routes/adminRoute.js')
+const products = require('./routes/productRoute.js')
 const cartItems = require('./routes/cartItemRoute.js')
 const orders = require('./routes/orderRoute.js')
+const reviews = require('./routes/reviewRoute.js')
 const notifications = require('./routes/notificationRoute.js')
 const questions = require('./routes/questionRoute.js')
-const products = require('./routes/productRoute.js')
-const reviews = require('./routes/reviewRoute.js')
 const reports = require('./routes/reportRoute.js')
+const admins = require('./routes/adminRoute.js')
 */
 
 const app = express()
@@ -52,6 +52,12 @@ app.use('/api/v1/sellers',sellers)
 app.use('/api/v1/clients',clients)
 app.use('/api/v1/categories',categories)
 app.use('/api/v1/types',types)
+
+
+
+
+
+
 app.use('*',(req,res)=>{res.send('404 , the endpoint do not exist ...')})
 
 
