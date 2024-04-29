@@ -1,4 +1,5 @@
 const Seller = require('../models/sellerModel.js')
+const Product = require('../models/productModel.js')
 const ObjectId = require('mongodb').ObjectId;
 
 
@@ -163,8 +164,22 @@ const patchSeller = async (req,res)=>{
 }
 
 
+const getSellerProducts = async (req, res) => {
+    let { id: SellerId } = req.params;
+    try {
+        let products = await Product.find({ sellerId: SellerId });
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: `Couldn't find any products of this seller`, data: [] });
+        }
+
+        res.status(200).json({ message: `Seller's products were fetched successfully !!`, data: products });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch products !!', data: null, error: error.message });
+    }
+};
 
 
 
 
-module.exports={getAllSellers,getSeller,patchSeller,deleteSeller}
+module.exports={getAllSellers,getSeller,patchSeller,deleteSeller,getSellerProducts}
