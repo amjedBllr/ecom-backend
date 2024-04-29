@@ -1,64 +1,142 @@
-const Task = require('../models/cartItemModel.js')
+const CartItem = require('../models/cartItemModel.js')
+const Client = require('../models/clientModel.js')
+const Product = require('../models/productModel.js')
+const ObjectId = require('mongodb').ObjectId;
 
-const getAllTasks = async (req,res)=>{
-    try{
-        const tasks = await Task.find({})
-        res.status(201).json({tasks})}
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const getOneTask = async(req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOne({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const postOneTask = async (req,res)=>{
-    try{
-    let task = await Task.create(req.body)
-    res.status(201).json({task})
-    console.log(`new task added !!`)
-    }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const deleteOneTask = async (req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOneAndDelete({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg : err})
-    }
-}
 
-const patchOneTask = async (req,res)=>{
+//* get one Item function 
+const getCartItem = async (req, res) => {
+
+    let {id:ItemId} = req.params
+
     try {
-        const {id:taskId} = req.params
-        const task = await Task.findOneAndUpdate({_id:taskId},req.body,{
-            new: true ,
-            runValidators : true
-        })
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
+        const item = await CartItem.findOne({_id:ItemId})
+
+        if(!item){
+            return res.status(404).json({message:`Could't find any cart item`, data:[]})
         }
-        else res.status(201).json({task})
-    } catch (err) {
-        res.status(500).json({msg : err})
+        
+        const product = Product.findOne({_id: item.productId})
+
+        let formattedItem = {
+            ...item._doc ,
+            sellerId: product.sellerId,
+            productName: product.productName ,
+            productDescription: product.description,
+            photos: product.photos,
+        }
+
+        res.status(200).json({message:`Item was fetched successfully !!`, data:formattedItem})
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch Item !!' , data:null , error: error.message })
+    }
+
+}
+
+
+//* patch Item function
+const postCartItem = async (req,res)=>{
+
+
+    //! take care fi kolch hna ta9dir taki care fih
+    const userId = req.user._id
+
+    const ItemData = req.body 
+    try {
+
+        const client = await Client.findOne({userId : userId})
+        const product = await Product.findOne({userId : userId})
+
+        //?deleting client-id w total price mnah dok nriglhm hna , gholta la
+
+        let {clientId, ...data} = ItemData
+
+        data = {
+            clientId : client._id ,
+            ...data 
+        }
+    
+        const item = await CartItem.create(data)
+
+        res.status(201).json({message:`cart item was created successfully !!`, data:item})
+        
+    } catch (error) {
+
+        return res.status(500).json({ message: 'Failed to create Item !!' , data:null , error: error.message })
+
     }
 }
 
-module.exports={getAllTasks,getOneTask,postOneTask,patchOneTask,deleteOneTask}
+//* delete a Item function 
+const deleteCartItem = async (req,res)=>{
+    try{
+
+        let {id:ItemId} = req.params
+        let currentUser = req.user._id 
+        let ItemClientId
+        let userClientId
+
+        const item = await  CartItem.findOne({ _id: ItemId })
+        if(item) ItemClientId = item.clientId 
+        const client = await Client.findOne({ userId : currentUser })
+        if(client) userClientId = Client._id 
+        const objectId = new ObjectId(ItemClientId)
+        const samePerson = objectId.equals(userClientId)
+        
+
+        if( samePerson ){
+
+           const item = await CartItem.findOneAndDelete({ _id: ItemId })
+
+           if(!item) return res.status(404).json({message:`Could not find any cart item with this id`, error:'cart item does not exist', data:null})
+
+           return res.status(200).json({message:`cart Item was removed successfully !!`, data:item})
+        }
+        
+        else return res.status(401).json({ message: 'Access denied !!', error: `Client is not authorized to ${req.method} other Client data` });
+   }
+   catch(error){
+       return res.status(500).json({ message: 'Failed to delete Item !!' , data:null , error: error.message })
+   }
+
+}
+
+
+//* patch Item function
+const patchCartItem = async (req,res)=>{
+
+    try{
+
+        let {id:ItemId} = req.params
+        let currentUser = req.user._id 
+        let ItemClientId
+        let userClientId
+
+        //? so we can verify if the request sender is the same person who posses the item , rarely happens ... but could happen 
+        const item = await  CartItem.findOne({ _id: ItemId })
+        if(item) ItemClientId = item.clientId 
+        const client = await Client.findOne({ userId : currentUser })
+        if(client) userClientId = Client._id 
+        const objectId = new ObjectId(ItemClientId)
+        const samePerson = objectId.equals(userClientId)
+
+         if(samePerson){
+            const { clientId , productId , ...updatedFields } = req.body;
+
+            const item = await CartItem.findOneAndUpdate({ _id: ItemId },
+            updatedFields,{ new: true, runValidators: true })
+
+            return res.status(200).json({message:`Item was patched successfully !!`, data:item})
+         }
+         
+         else return res.status(401).json({ message: 'Access denied !!', error: `Client is not authorized to ${req.method} other Client data` });
+    }
+    catch(error){
+        return res.status(500).json({ message: 'Failed to patch Item !!' , data:null , error: error.message })
+    }
+}
+
+
+
+module.exports={postCartItem,getCartItem,patchCartItem,deleteCartItem}
