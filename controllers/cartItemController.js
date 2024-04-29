@@ -128,6 +128,8 @@ const patchCartItem = async (req,res)=>{
             const item = await CartItem.findOneAndUpdate({ _id: ItemId },
             updatedFields,{ new: true, runValidators: true })
 
+            if(!item) return res.status(404).json({message:`Could't find any item with this id`, data:[]})
+
             return res.status(200).json({message:`Item was patched successfully !!`, data:item})
          }
          

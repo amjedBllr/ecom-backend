@@ -2,11 +2,17 @@
 const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
-  cartItemId: { type: String, required: true },
+  clientId: { type: String, required: true },
+  productId: { type: String, required: true },
   orderDate: { type: Date, required: Date.now },
   shippingAddress: { type: String, required: true },
   paymentMethod: { type: String, enum:['creditCard','paypal','edahabia'] ,required: true },
-  orderStatus: { type: String, enum:['pending','processing','In Transit','shipped','delivered','cancelled','returned','cefunded'] , default:'pending'}
+  orderStatus: { type: String, enum:['pending','processing','In Transit','shipped','delivered','cancelled','returned','cefunded'] , default:'pending'},
+  quantity: { type: Number, required: true },
+  size: String,
+  color: String,
+  dimension: String,
+  totalPrice:{ type: Number, required: true }
 });
 
 const Order = mongoose.model('Order', orderSchema);

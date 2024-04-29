@@ -12,7 +12,7 @@ router.route('/:id')
     .patch(restrict('admin','client'),method.patchClient)
     .delete(restrict('admin','client'),method.deleteClient)
 
-router.route('/:id/cart-items')
+router.route('/cart-items')
     .get(restrict('client'),method.getClientItems)
 
 module.exports=router

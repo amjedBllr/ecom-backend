@@ -161,31 +161,19 @@ const getClientItems = async (req,res)=>{
 
     try {
 
-        
-        let {id:clientId} = req.params
         let currentUser = req.user._id 
-
-        //? so we can verify if the request sender is the same person who posses the item , rarely happens ... but could happen 
         
         let client = await Client.findOne({userId:currentUser})
+
         let userClientId = client._id ;
 
-        const objectId = new ObjectId(clientId)
-
-        const samePerson = objectId.equals(userClientId)
-
-        if(samePerson){
-
-            let items = await CartItem.find({clientId:clientId})
+            let items = await CartItem.find({clientId:userClientId})
 
             if(!items || items.length<=0){
                 return res.status(404).json({message:`Could't find any cart items of this client`, data:[]})
             }
 
             return res.status(200).json({message:`Client items was fetched successfully !!`, data:items})
-         }
-         
-         else return res.status(401).json({ message: 'Access denied !!', error: `Client is not authorized to ${req.method} other Client data` });
         
         res.status(200).json({message:`Seller's products was fetched successfully !!`, data:products})
     } catch (error) {

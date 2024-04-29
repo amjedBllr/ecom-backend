@@ -9,7 +9,7 @@ router.route('/')
 
 router.route('/:id')
     .all(restrict('client'))
-    .get(method.getCartItem)
+    .get(restrict('client'),method.getCartItem)
     .patch(method.patchCartItem)
     .delete(method.deleteCartItem)
 
