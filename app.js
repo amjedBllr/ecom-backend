@@ -55,8 +55,9 @@ app.use('/api/v1/types',types)
 app.use('/api/v1/products',products)
 app.use('/api/v1/cart-items',cartItems)
 
-
-
+app.get('/userinfo',(req,res)=>{
+    res.json(`${req.user}`)
+})
 
 app.use('*',(req,res)=>{res.send('404 , this endpoint do not exist !!')})
 
