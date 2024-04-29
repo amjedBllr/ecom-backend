@@ -8,6 +8,8 @@ router.post('/register/user', method.registerUser);
 router.post('/register/client', restrict('client') ,method.registerClient);
 router.post('/register/seller', restrict('seller') , method.registerSeller);
 
+router.get('/userinfo', restrict() ,method.userinfo);
+
 router.post('/login', method.loginUser);
 router.get('/logout', method.logoutUser);
 

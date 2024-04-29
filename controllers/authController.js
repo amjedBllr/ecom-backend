@@ -123,6 +123,37 @@ const registerSeller = async (req, res) => {
 
 
 
+const userinfo = async (req, res) => {
+    const currentUser = req.user._id;
+
+    try {
+        const user = await User.findOne({ _id: currentUser });
+
+        let info;
+        if (user.role === "seller") {
+            info = {
+                user_info:user,
+                seller_info: await Seller.findOne({ userId: currentUser })
+            };
+        } else if (user.role === "client") {
+            info = {
+                user_info:user,
+                client_info: await Client.findOne({ userId: currentUser })
+            };
+        } else {
+            info = {user_info:user}
+        }
+
+        return res.status(200).json({ message: "Info fetched successfully!", data: info });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
+
+
+
+
+
 const loginUser = async (req, res, next) => {
     try {
         if (!req.isAuthenticated()) {
@@ -182,4 +213,4 @@ const logoutUser = (req, res) => {
 };
 
 
-module.exports={registerUser,registerClient,registerSeller,loginUser,logoutUser}
+module.exports={registerUser,registerClient,registerSeller,loginUser,logoutUser,userinfo}
