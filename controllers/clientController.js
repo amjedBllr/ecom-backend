@@ -1,5 +1,6 @@
 const Client = require('../models/clientModel.js')
 const CartItem = require('../models/cartItemModel.js')
+const Order = require('../models/orderModel.js')
 const ObjectId = require('mongodb').ObjectId;
 
 
@@ -156,30 +157,55 @@ const patchClient = async (req,res)=>{
 
 
 
-//? well it's clear from the name but , we get all the products of a one seller
-const getClientItems = async (req,res)=>{
+//? well it's clear from the name but , we'll get the cart items of a client , literally ain't no body even getting access to it but him !!
 
+const getClientItems = async (req, res) => {
     try {
+        let currentUser = req.user._id;
+        let client = await Client.findOne({ userId: currentUser });
 
-        let currentUser = req.user._id 
-        
-        let client = await Client.findOne({userId:currentUser})
+        if (!client) {
+            return res.status(404).json({ message: "Client not found", data: [] });
+        }
 
-        let userClientId = client._id ;
+        let clientId = client._id; // Use the client's ObjectId
 
-            let items = await CartItem.find({clientId:userClientId})
+        let items = await CartItem.find({ clientId: clientId });
 
-            if(!items || items.length<=0){
-                return res.status(404).json({message:`Could't find any cart items of this client`, data:[]})
-            }
+        if (!items || items.length <= 0) {
+            return res.status(404).json({ message: "Couldn't find any cart items of this client", data: [] });
+        }
 
-            return res.status(200).json({message:`Client items was fetched successfully !!`, data:items})
-        
-        res.status(200).json({message:`Seller's products was fetched successfully !!`, data:products})
+        return res.status(200).json({ message: "Client items were fetched successfully !!", data: items });
     } catch (error) {
-        return res.status(500).json({ message: 'Failed to fetch cart items !!' , data:null , error: error.message })
+        return res.status(500).json({ message: 'Failed to fetch cart items !!', data: null, error: error.message });
     }
-}
+};
 
 
-module.exports={getAllClients,getClient,patchClient,deleteClient,getClientItems}
+//? well it's clear from the name but , we'll get the orders of a client , literally ain't no body even getting access to it but him !!
+
+const getClientOrders = async (req, res) => {
+    try {
+        let currentUser = req.user._id;
+        let client = await Client.findOne({ userId: currentUser });
+
+        if (!client) {
+            return res.status(404).json({ message: "Client not found", data: [] });
+        }
+
+        let clientId = client._id; // Use the client's ObjectId
+
+        let orders = await Order.find({ clientId: clientId });
+
+        if (!orders || orders.length <= 0) {
+            return res.status(404).json({ message: "Couldn't find any orders of this client", data: [] });
+        }
+
+        return res.status(200).json({ message: "Client orders were fetched successfully !!", data: orders });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch orders !!', data: null, error: error.message });
+    }
+};
+
+module.exports={getAllClients,getClient,patchClient,deleteClient,getClientItems,getClientOrders}

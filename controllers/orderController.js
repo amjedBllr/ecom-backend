@@ -7,7 +7,7 @@ const ObjectId = require('mongodb').ObjectId;
 
 //* get one Order function 
 const getOrder = async (req, res) => {
-    //! matvirifish hana id same client ?
+    //! matvirifish hana id same client ? .. khli nhar khlaf , mnah mach lazma fl presentation , lazma ida rah tbda lkhdma bih sah
     
     let {id:OrderId} = req.params
 
@@ -59,6 +59,7 @@ const postOrder = async (req, res) => {
 
         const data = {
             clientId: client._id,
+            sellerId: product.sellerId,
             totalPrice: price * orderData.quantity,
             ...orderData
         };
@@ -74,45 +75,48 @@ const postOrder = async (req, res) => {
 
 
 //* patch Order function
-const patchOrder = async (req,res)=>{
+const patchOrder = async (req, res) => {
+    try {
+        let { id: OrderId } = req.params;
+        let currentUser = req.user._id;
 
-    try{
+        let orderSellerId;
+        let userSellerId;
 
-        let {id:OrderId} = req.params
-        let currentUser = req.user._id 
+        const order = await Order.findOne({ _id: OrderId });
+        if (!order) {
+            return res.status(404).json({ message: `Couldn't find any order with this id`, data: [] });
+        }
 
-        let orderSellerId
-        let userSellerId
+        const product = await Product.findOne({ _id: order.productId });
+        if (!product) {
+            return res.status(404).json({ message: `Couldn't find any product associated with this order`, data: [] });
+        }
+        orderSellerId = product.sellerId;
 
-        //? so we can verify if the request sender is the same seller of the product in the order, rarely happens ... but could happen 
+        const seller = await Seller.findOne({ userId: currentUser });
+        if (seller) {
+            userSellerId = seller._id;
 
-        const order = await  order.findOne({ _id: OrderId })
-         if(order) {
-            const product = await Product.findOne({_id:order.productId})
-            orderSellerId = product.sellerId 
-         }
-        const seller = await Seller.findOne({ userId : currentUser })
-        if(seller) userSellerId = seller._id 
-        const objectId = new ObjectId(orderSellerId)
-        const samePerson = objectId.equals(userSellerId)
+            const objectId = new ObjectId(orderSellerId);
+            const samePerson = objectId.equals(userSellerId);
 
-         if(samePerson){
-            const { orderStatus , ...other } = req.body;
+            if (samePerson) {
+                const { orderStatus, ...other } = req.body;
 
-            const order = await Order.findOneAndUpdate({ _id: OrderId },
-            orderStatus,{ new: true, runValidators: true })
+                const updatedOrder = await Order.findOneAndUpdate({ _id: OrderId }, { orderStatus }, { new: true, runValidators: true });
 
-            if(!order) return res.status(404).json({message:`Could't find any order with this id`, data:[]})
-
-            return res.status(200).json({message:`Order was patched successfully !!`, data:Order})
-         }
-         
-         else return res.status(401).json({ message: 'Access denied !!', error: `Seller is not authorized to ${req.method} other seller data` });
+                return res.status(200).json({ message: `Order was patched successfully !!`, data: updatedOrder });
+            } else {
+                return res.status(401).json({ message: 'Access denied !!', error: `Seller is not authorized to ${req.method} other seller data` });
+            }
+        } else {
+            return res.status(401).json({ message: 'Unauthorized', error: `Current user is not a seller` });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to patch Order !!', data: null, error: error.message });
     }
-    catch(error){
-        return res.status(500).json({ message: 'Failed to patch Order !!' , data:null , error: error.message })
-    }
-}
+};
 
 
 

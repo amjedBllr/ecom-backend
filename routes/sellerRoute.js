@@ -7,6 +7,9 @@ const router = express.Router()
 router.route('/')
     .get(restrict('admin'),method.getAllSellers)
 
+router.route('/orders')
+    .get(restrict('seller'),method.getSellerOrders)
+
 router.route('/:id')
     .get(restrict(),method.getSeller)
     .patch(restrict('admin','seller'),method.patchSeller)

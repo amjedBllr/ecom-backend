@@ -7,12 +7,17 @@ const router = express.Router()
 router.route('/')
     .get(restrict('admin'),method.getAllClients)
 
+router.route('/orders')
+    .get(restrict('client'),method.getClientOrders)
+
+router.route('/cart-items')
+    .get(restrict('client'),method.getClientItems)
+
 router.route('/:id')
     .get(restrict(),method.getClient)
     .patch(restrict('admin','client'),method.patchClient)
     .delete(restrict('admin','client'),method.deleteClient)
 
-router.route('/cart-items')
-    .get(restrict('client'),method.getClientItems)
+
 
 module.exports=router

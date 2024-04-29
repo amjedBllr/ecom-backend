@@ -1,5 +1,6 @@
 const Seller = require('../models/sellerModel.js')
 const Product = require('../models/productModel.js')
+const Order = require('../models/orderModel.js')
 const ObjectId = require('mongodb').ObjectId;
 
 
@@ -180,6 +181,29 @@ const getSellerProducts = async (req, res) => {
 };
 
 
+//? well it's clear from the name but , we'll get the orders of a seller , literally ain't no body even getting access to it but him !!
 
+const getSellerOrders = async (req, res) => {
+    try {
+        let currentUser = req.user._id;
+        let seller = await Seller.findOne({ userId: currentUser });
 
-module.exports={getAllSellers,getSeller,patchSeller,deleteSeller,getSellerProducts}
+        if (!seller) {
+            return res.status(404).json({ message: "Client not found", data: [] });
+        }
+
+        let sellerId = seller._id; // Use the seller's ObjectId
+
+        let orders = await Order.find({ sellerId: sellerId });
+
+        if (!orders || orders.length <= 0) {
+            return res.status(404).json({ message: "Couldn't find any orders of this seller", data: [] });
+        }
+
+        return res.status(200).json({ message: "Seller orders were fetched successfully !!", data: orders });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch orders !!', data: null, error: error.message });
+    }
+};
+
+module.exports={getAllSellers,getSeller,patchSeller,deleteSeller,getSellerProducts,getSellerOrders}

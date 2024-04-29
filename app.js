@@ -22,9 +22,9 @@ const categories = require('./routes/PCRoute.js')
 const types = require('./routes/PCTRoute.js')
 const products = require('./routes/productRoute.js')
 const cartItems = require('./routes/cartItemRoute.js')
+const orders = require('./routes/orderRoute.js')
 
 /*
-const orders = require('./routes/orderRoute.js')
 const reviews = require('./routes/reviewRoute.js')
 const notifications = require('./routes/notificationRoute.js')
 const questions = require('./routes/questionRoute.js')
@@ -54,6 +54,7 @@ app.use('/api/v1/categories',categories)
 app.use('/api/v1/types',types)
 app.use('/api/v1/products',products)
 app.use('/api/v1/cart-items',cartItems)
+app.use('/api/v1/orders',orders)
 
 app.get('/userinfo',(req,res)=>{
     res.json(`${req.user}`)
