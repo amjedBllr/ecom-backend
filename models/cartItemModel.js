@@ -9,7 +9,7 @@ const cartItemSchema = mongoose.Schema({
   size: String,
   color: String,
   dimension: String,
-  itemStatus: String
+  isConfirmed: { type: Boolean , default:false }
 });
 
 const CartItem = mongoose.model('Cart-Item', cartItemSchema);

@@ -48,7 +48,6 @@ const postCartItem = async (req,res)=>{
     try {
 
         const client = await Client.findOne({userId : userId})
-        const product = await Product.findOne({userId : userId})
 
         //?deleting client-id w total price mnah dok nriglhm hna , gholta la
 
@@ -82,7 +81,7 @@ const deleteCartItem = async (req,res)=>{
         const item = await  CartItem.findOne({ _id: ItemId })
         if(item) ItemClientId = item.clientId 
         const client = await Client.findOne({ userId : currentUser })
-        if(client) userClientId = Client._id 
+        if(client) userClientId = client._id 
         const objectId = new ObjectId(ItemClientId)
         const samePerson = objectId.equals(userClientId)
         
@@ -119,7 +118,7 @@ const patchCartItem = async (req,res)=>{
         const item = await  CartItem.findOne({ _id: ItemId })
         if(item) ItemClientId = item.clientId 
         const client = await Client.findOne({ userId : currentUser })
-        if(client) userClientId = Client._id 
+        if(client) userClientId = client._id 
         const objectId = new ObjectId(ItemClientId)
         const samePerson = objectId.equals(userClientId)
 

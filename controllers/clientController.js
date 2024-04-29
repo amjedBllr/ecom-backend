@@ -176,9 +176,9 @@ const getClientItems = async (req,res)=>{
 
         if(samePerson){
 
-            let items = CartItem.find({clientId:clientId})
+            let items = await CartItem.find({clientId:clientId})
 
-            if(!items){
+            if(!items || items.length<=0){
                 return res.status(404).json({message:`Could't find any cart items of this client`, data:[]})
             }
 
