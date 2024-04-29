@@ -123,30 +123,41 @@ const registerSeller = async (req, res) => {
 
 
 
-
-const loginUser = (req, res, next) => {
-    if(!req.isAuthenticated()){
-        passport.authenticate('local', (err, user, info) => {
-            if (err) {
-                return res.status(500).json({ message: 'Internal server error' , error : info.message});
-            }
-            if (!user) {
-                return res.status(401).json({ message: 'Authentication failed', error : info.message });
-            }
-            req.logIn(user, (err) => {
+const loginUser = async (req, res, next) => {
+    try {
+        if (!req.isAuthenticated()) {
+            passport.authenticate('local', async (err, user, info) => {
                 if (err) {
-                    return next(err);
+                    return res.status(500).json({ message: 'Internal server error', error: info.message });
                 }
-                else{
-                    console.log(`user ${user._id} logged in !`)
-                    return res.status(200).json({ message: 'Login successful' , data:{_id:user._id,email:user.email,role:user.role}});
+                if (!user) {
+                    return res.status(401).json({ message: 'Authentication failed', error: info.message });
                 }
-                
-            });
-        })(req, res, next);
-    }
-    else{
-       return res.status(401).json({ message: 'you are already logged in !! , stop messing with the api bud !!'  });
+                req.logIn(user, async (err) => {
+                    if (err) {
+                        return next(err);
+                    } else {
+                        try {
+                            let client = await Client.findOne({ userId: user._id });
+                            let seller = await Seller.findOne({ userId: user._id });
+                            let data = { user_id: user._id, email: user.email, role: user.role };
+
+                            if (client) data = { ...data, client_id: client._id };
+                            if (seller) data = { ...data, seller_id: seller._id };
+
+                            console.log(`user ${user._id} logged in !`);
+                            return res.status(200).json({ message: 'Login successful', data: data });
+                        } catch (error) {
+                            return res.status(500).json({ message: 'Internal server error', error: error.message });
+                        }
+                    }
+                });
+            })(req, res, next);
+        } else {
+            return res.status(401).json({ message: 'You are already logged in!! Stop messing with the API bud!!' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
