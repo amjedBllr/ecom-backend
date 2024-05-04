@@ -3,8 +3,7 @@ const passport = require('../middlewares/passport.js')
 const User = require('../models/userModel.js')
 const Seller = require('../models/sellerModel.js')
 const Client = require('../models/clientModel.js')
-
-
+const uploadImage = require('../utils/firebaseFIleSystem.js')
 
 const registerUser = async (req, res) => {
     try {
@@ -79,9 +78,8 @@ const registerClient = async (req, res) => {
 const registerSeller = async (req, res) => {
 
     try {
-        const {
-            type,name,businessPhoneNumber,businessEmail,address,paymentAccountNumber,paymentAccountType,identification,commerceRegisterNumber
-        } = req.body
+        const idCard = req.files['identityCard']
+        const addInfo = req.files['additionalInformation']
 
         const client = await Client.findOne({ userId: req.user._id});
         const seller = await Client.findOne({ userId: req.user._id });
@@ -92,21 +90,15 @@ const registerSeller = async (req, res) => {
         //? add seller to the database 
 
         else{
+            
+            let idUrl = (idCard)? await uploadImage('sellers',idCard[0]) : null
+            let addUrl = (addInfo)? await uploadImage('sellers',addInfo[0]) : null
+
             let seller = await Seller.create({
+                ...req.body ,
                 userId: req.user._id,
-                sellerType: type ,
-                businessName: name,
-                businessAddress: address,
-                businessEmail: businessEmail,
-                businessPhone: businessPhoneNumber,
-                creditCardActivity: ((paymentAccountType=='creditCard')?true:false),
-                paypalActivity: ((paymentAccountType=='paypal')?true:false),
-                edahabiaActivity: ((paymentAccountType=='edahabia')?true:false),
-                creditCardNumber: ((paymentAccountType=='creditCard')?paymentAccountNumber:null),
-                paypalNumber: ((paymentAccountType=='paypal')?paymentAccountNumber:null),
-                edahabiaNumber: ((paymentAccountType=='edahabia')?paymentAccountNumber:null),
-                commerceRegisterNumber: commerceRegisterNumber,
-                identityCard: identification,
+                identityCard : (idUrl)? idUrl:null ,
+                additionalInformation: (addUrl)?addUrl:null
             })
     
                 res.status(201).json({ message: `Seller ${seller._id} registered successfully !!` , data : {seller} })

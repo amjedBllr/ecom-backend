@@ -22,7 +22,7 @@ async function uploadImage(folderName, imageFile) {
     const snapshot = await uploadBytesResumable(storgaeRef , imageFile.buffer , metadata)
 
     const downloadUrl = await getDownloadURL(snapshot.ref)
-
+    
     return(downloadUrl)
 
   } catch (error) {

@@ -2,12 +2,13 @@ const express = require('express');
 const method = require('../controllers/authController');
 const restrict = require('../middlewares/authorization.js')
 
+const upload = require('../utils/imageFormating.js')
+
 const router = express.Router();
 
 router.post('/register/user', method.registerUser);
 router.post('/register/client', restrict('client') ,method.registerClient);
-router.post('/register/seller', restrict('seller') , method.registerSeller);
-
+router.post('/register/seller', restrict('seller') , upload.fields([{ name: 'identityCard' }, { name: 'additionalInformation' }]) , method.registerSeller);
 router.get('/userinfo', restrict() ,method.userinfo);
 
 router.post('/login', method.loginUser);
