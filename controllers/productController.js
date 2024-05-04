@@ -2,7 +2,7 @@ const Product = require('../models/productModel.js')
 const Seller = require('../models/sellerModel.js')
 const Review = require('../models/reviewModel.js')
 const ObjectId = require('mongodb').ObjectId;
-
+const uploadImage = require('../utils/firebaseFIleSystem.js');
 
 
 //*get many Products function

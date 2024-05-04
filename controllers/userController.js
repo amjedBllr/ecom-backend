@@ -2,7 +2,7 @@
 const User = require('../models/userModel.js')
 const Seller= require('../models/sellerModel.js')
 const Client = require('../models/clientModel.js')
-
+const uploadImage = require('../utils/firebaseFIleSystem.js');
 
 //*get all users function
 

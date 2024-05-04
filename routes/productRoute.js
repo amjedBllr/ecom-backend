@@ -1,6 +1,9 @@
 const express = require('express')
 const method = require('../controllers/productController.js')
 const restrict = require('../middlewares/authorization.js')
+const multer = require('multer')
+
+const upload = multer({storage : multer.memoryStorage()})
 
 const router = express.Router()
 

@@ -2,6 +2,7 @@ const express = require('express')
 const method = require('../controllers/sellerController.js')
 const restrict = require('../middlewares/authorization.js')
 
+
 const router = express.Router()
 
 router.route('/')
