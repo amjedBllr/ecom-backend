@@ -1,15 +1,13 @@
 const express = require('express')
 const method = require('../controllers/productController.js')
 const restrict = require('../middlewares/authorization.js')
-const multer = require('multer')
-
-const upload = multer({storage : multer.memoryStorage()})
+const upload = require('../utils/imageFormating.js')
 
 const router = express.Router()
 
 router.route('/')
             .get(method.getManyProducts) //* ( /?name&categroy&type&discount )
-            .post(restrict('seller'),method.postProduct)
+            .post(restrict('seller'),upload.array('photos', 3),method.postProduct)
 
 router.route('/:id')
             .get(method.getProduct)

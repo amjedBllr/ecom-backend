@@ -91,31 +91,37 @@ const getProduct = async (req, res) => {
 
 
 //* patch Product function
-const postProduct = async (req,res)=>{
+const postProduct = async (req, res) => {
+    const userId = req.user._id;
+    const productData = req.body;
 
-    const userId = req.user._id
-    const productData = req.body 
     try {
+        const seller = await Seller.findOne({ userId: userId });
 
-        const seller = await Seller.findOne({userId : userId})
+        let photos = [];
 
-        let {sellerId, ...data} = productData
-
-        data = {
-            sellerId : seller._id ,
-            ...data
+        if (req.files && req.files.length > 0) {
+            photos = await Promise.all(req.files.map(async (photo) => {
+                return await uploadImage('products', photo);
+            }));
         }
-    
-        const product = await Product.create(data)
 
-        res.status(201).json({message:`Product was created successfully !!`, data:product})
-        
+        const { sellerId, ...data } = productData;
+
+        const newData = {
+            sellerId: seller._id,
+            ...data,
+            photos: photos
+        };
+
+        const product = await Product.create(newData);
+
+        res.status(201).json({ message: 'Product was created successfully!', data: product });
     } catch (error) {
-
-        return res.status(500).json({ message: 'Failed to create product !!' , data:null , error: error.message })
-
+        return res.status(500).json({ message: 'Failed to create product!', data: null, error: error.message });
     }
-}
+};
+
 
 //* delete a Product function 
 const deleteProduct = async (req,res)=>{
