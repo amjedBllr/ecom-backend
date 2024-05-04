@@ -60,7 +60,28 @@ app.get('/userinfo',(req,res)=>{
     res.json(`${req.user}`)
 })
 
+
+
+
+const uploadImage = require('./utils/firebaseFIleSystem.js');
+const multer = require('multer')
+const upload = multer({storage : multer.memoryStorage()})
+
+app.post('/test' , upload.single("filename") , async (req,res)=>{
+    try {
+      const image = await uploadImage('test',req.file)
+      res.status(201).json({message:`image upload successed` , url : image})
+    } catch (error) {
+      res.status(500).json({message:`failed my g !!` , error : error.message})
+    }
+  })
+
+
 app.use('*',(req,res)=>{res.send('404 , this endpoint do not exist !!')})
+
+
+//! test route
+
 
 
 
