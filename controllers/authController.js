@@ -91,8 +91,8 @@ const registerSeller = async (req, res) => {
 
         else{
             
-            let idUrl = (idCard)? await uploadImage('sellers',idCard[0]) : null
-            let addUrl = (addInfo)? await uploadImage('sellers',addInfo[0]) : null
+            let idUrl = (idCard)? await uploadImage('seller information',idCard[0]) : null
+            let addUrl = (addInfo)? await uploadImage('seller information',addInfo[0]) : null
 
             let seller = await Seller.create({
                 ...req.body ,

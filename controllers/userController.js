@@ -150,7 +150,9 @@ const patchUser = async (req,res)=>{
 
         if(((['client', 'seller'].includes(role) && (UserId == currentUser)) || role === 'admin')){
 
-            const user = await User.findOneAndUpdate({_id:UserId},req.body,{
+            const pfp = (req.file)? await uploadImage('profile pictures',req.file) : null ;
+
+            const user = await User.findOneAndUpdate({_id:UserId},{...req.body , pfp},{
                 new: true ,
                 runValidators : true
             })
@@ -164,7 +166,8 @@ const patchUser = async (req,res)=>{
                 username: user.username ? user.username : null,
                 email: user.email,
                 role: user.role,
-                registrationDate: user.registrationDate
+                registrationDate: user.registrationDate,
+                pfp:pfp?pfp:null
             }
     
             res.status(201).json({message:`User was patched successfully !!`, data:formattedUser})
