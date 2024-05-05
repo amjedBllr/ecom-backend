@@ -7,6 +7,7 @@ const uploadImage = require('../utils/firebaseFIleSystem.js')
 
 const registerUser = async (req, res) => {
     try {
+        
         const { email, password, role } = req.body
 
 
