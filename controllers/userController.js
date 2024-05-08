@@ -167,7 +167,7 @@ const patchUser = async (req,res)=>{
                 email: user.email,
                 role: user.role,
                 registrationDate: user.registrationDate,
-                pfp:pfp?pfp:null
+                pfp:pfp
             }
     
             res.status(201).json({message:`User was patched successfully !!`, data:formattedUser})

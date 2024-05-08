@@ -13,7 +13,7 @@ async function uploadImage(folderName, imageFile) {
   try {
     const dateTime = Date.now()
 
-    const storgaeRef = ref(storage,`${folderName}/${imageFile.originalname+"  "+dateTime}`)
+    const storgaeRef = ref(storage,`${folderName}/${imageFile.originalname+"-"+dateTime}`)
 
     const metadata = {
       contentType : imageFile.mimeType

@@ -10,6 +10,7 @@ const registerUser = async (req, res) => {
         
         const { email, password, role } = req.body
 
+        const pfp = (req.file)? await uploadImage('profile pictures',req.file) : null ;
 
         //?check if the email already exists in the database
         let Email = await User.findOne({email:email})
@@ -26,9 +27,10 @@ const registerUser = async (req, res) => {
             hash: hashedPassword,
             salt: salt,
             role: role,
+            pfp:pfp,
         })
 
-        res.status(201).json({ message: `User ${user._id} registered successfully !!` , data : {id:user._id,email:user.email} })
+        res.status(201).json({ message: `User ${user._id} registered successfully !!` , data : {id:user._id,email:user.email,pfp:user.pfp} })
     } catch (error) {
         res.status(500).json({ message: 'Failed to register user', error: error.message })
     }
