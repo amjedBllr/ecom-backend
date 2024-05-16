@@ -44,7 +44,7 @@ const registerUser = async (req, res) => {
 
           const mailOptions = {
             from: process.env.SMTP_USER,
-            to: user.email,
+            to: email,
             subject: 'Email Verification',
             html: `<h1>Wellcome to souqkantra</h1>
                     <br/>
@@ -240,7 +240,45 @@ const verifyUser = async (req, res) => {
                 new: true ,
                 runValidators : true
             })
-            return res.status(201).json({ message: `Your email ${user.email} were successfuly verified !!`});
+            return res.status(201).send(`
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Verification Successful!</title>
+                    <style>
+                        body {
+                            font-family: sans-serif;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 100vh;
+                            background-color: #f0f0f0;
+                        }
+                        
+                        .container {
+                            background-color: #fff;
+                            padding: 30px;
+                            border-radius: 5px;
+                            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+                            text-align: center;
+                        }
+                        
+                        .message {
+                            font-size: 20px;
+                            margin-bottom: 15px;
+                            color: #3c763d;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <p class="message">Your email was successfully verified!</p>
+                    </div>
+            </body>
+            </html>
+            `);
         }
     catch (error) {
         return res.status(500).json({ message: 'Internal server error', error: error.message });
