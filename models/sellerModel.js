@@ -19,7 +19,8 @@ const sellerSchema = mongoose.Schema({
   identityCard: {type : String , required: true},
   averageRating: Number,
   totalReviews: Number,
-  additionalInformation: String
+  additionalInformation: String,
+  sellerStatus : {type: String , enum:['unverified','verified'] , default:'unverified'}
 });
 
 const Seller = mongoose.model('Seller', sellerSchema);

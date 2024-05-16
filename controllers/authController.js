@@ -4,6 +4,9 @@ const User = require('../models/userModel.js')
 const Seller = require('../models/sellerModel.js')
 const Client = require('../models/clientModel.js')
 const uploadImage = require('../utils/firebaseFIleSystem.js')
+const nodemailer = require('nodemailer');
+
+require('dotenv').config()
 
 const registerUser = async (req, res) => {
     try {
@@ -30,7 +33,28 @@ const registerUser = async (req, res) => {
             pfp:pfp,
         })
 
-        res.status(201).json({ message: `User ${user._id} registered successfully !!` , data : {id:user._id,email:user.email,pfp:user.pfp} })
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS,
+            },
+          });
+
+          const mailOptions = {
+            from: process.env.SMTP_USER,
+            to: "amjedbellir03@gmail.com",
+            subject: 'Email Verification',
+            html: `<h1>Wellcome to souqkantra</h1>
+                    <br/>
+                    <p>click this <a href='${process.env.SERVER_URL+'/api/v1/auth/verify/'+user._id}'>LINK</a> to confim your account !! </p>
+            `,
+          };
+
+          transporter.sendMail(mailOptions)
+
+        res.status(201).json({ message: `User ${user._id} registered successfully , check your email to verify your account !!` , data : {id:user._id,email:user.email,pfp:user.pfp} })
     } catch (error) {
         res.status(500).json({ message: 'Failed to register user', error: error.message })
     }
@@ -207,5 +231,20 @@ const logoutUser = (req, res) => {
    else return res.status(401).json({ message: 'you were not even logged in , stop messing with URLs bud !!' });
 };
 
+const verifyUser = async (req, res) => {
 
-module.exports={registerUser,registerClient,registerSeller,loginUser,logoutUser,userinfo}
+    const {id:userId} = req.params ;
+
+    try {
+            const user = await User.findOneAndUpdate({_id:userId},{accountStatus:'verified'},{
+                new: true ,
+                runValidators : true
+            })
+            return res.status(201).json({ message: `Your email ${user.email} were successfuly verified !!`});
+        }
+    catch (error) {
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+}
+
+module.exports={registerUser,registerClient,registerSeller,loginUser,logoutUser,userinfo,verifyUser}

@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema({
   role: { type: String, enum : ['client','seller','admin'],required: true },
   registrationDate: { type: Date, required: true , default:Date.now()},
   lastLoginDate: Date,
-  accountStatus: { type: String, enum:['pending','verified'] , default:'pending' , required: false }
+  accountStatus: { type: String, enum:['unverified','verified'] , default:'unverified' }
 });
 
 const User = mongoose.model('User', userSchema);
