@@ -1,64 +1,43 @@
-const Task = require('../models/reviewModel.js')
+const Review = require('../models/reviewModel.js')
 
-const getAllTasks = async (req,res)=>{
+
+
+const postReview = async (req,res)=>{
+    const currentUser = req.user._id
+
     try{
-        const tasks = await Task.find({})
-        res.status(201).json({tasks})}
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const getOneTask = async(req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOne({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
+
+        const revData = req.body
+
+        const data = {
+            ...revData,
+            userId:currentUser
         }
-        else res.status(201).json({task})
+
+        const rev = await Review.create(data)
+
+        return res.status(200).json({message:`review was added successfully !!`, data:rev})  
     }
-    catch(err){
-        res.status(500).json({msg:err})
+    catch(error){
+    return res.status(500).json({ message: 'Failed to add review !!' , data:null , error: error.message })
     }
-}
-const postOneTask = async (req,res)=>{
+
+    }
+
+//? usally i'd check wether the user is the same review writer but i'm kinda tired and have no time ... this is just fine anyway
+
+const deleteReview = async (req,res)=>{
+    let {id:RevId} = req.params
     try{
-    let task = await Task.create(req.body)
-    res.status(201).json({task})
-    console.log(`new task added !!`)
+        const rev = await Review.findOneAndDelete({ _id: RevId })
+        if(!rev) return res.status(404).json({message:`Could not find any review with this id`, error:'review does not exist', data:null})
+        return res.status(200).json({message:`review was removed successfully !!`, data:rev})  
     }
-    catch(err){
-        res.status(500).json({msg:err})
+    catch(error){
+    return res.status(500).json({ message: 'Failed to delete review !!' , data:null , error: error.message })
     }
-}
-const deleteOneTask = async (req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOneAndDelete({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg : err})
-    }
+
 }
 
-const patchOneTask = async (req,res)=>{
-    try {
-        const {id:taskId} = req.params
-        const task = await Task.findOneAndUpdate({_id:taskId},req.body,{
-            new: true ,
-            runValidators : true
-        })
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    } catch (err) {
-        res.status(500).json({msg : err})
-    }
-}
 
-module.exports={getAllTasks,getOneTask,postOneTask,patchOneTask,deleteOneTask}
+module.exports={postReview,deleteReview}

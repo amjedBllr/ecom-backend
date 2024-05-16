@@ -193,5 +193,17 @@ const patchProduct = async (req,res)=>{
 }
 
 
+const getProductReviews = async (req, res) => {
+    let { id: ProductId } = req.params;
+    try {
+        let reviews = await Review.find({ productId: ProductId });
+        if (!reviews || reviews.length === 0) {
+            return res.status(404).json({ message: `Couldn't find any reviews of this product`, data: [] });
+        }
+        res.status(200).json({ message: `Product's reviews were fetched successfully !!`, data: reviews });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch reviews !!', data: null, error: error.message });
+    }
+};
 
-module.exports={getManyProducts,postProduct,getProduct,patchProduct,deleteProduct}
+module.exports={getManyProducts,postProduct,getProduct,patchProduct,deleteProduct,getProductReviews}

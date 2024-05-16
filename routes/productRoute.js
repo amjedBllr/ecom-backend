@@ -14,5 +14,7 @@ router.route('/:id')
             .patch(restrict('seller'),method.patchProduct)
             .delete(restrict('admin','seller'),method.deleteProduct)
 
+router.route('/:id/reviews')
+            .get(method.getProductReviews)
 
 module.exports=router
