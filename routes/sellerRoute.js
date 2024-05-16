@@ -11,6 +11,9 @@ router.route('/')
 router.route('/orders')
     .get(restrict('seller'),method.getSellerOrders)
 
+router.route('/:id/confirm') 
+    .patch(restrict('admin'),method.confirmSeller)
+
 router.route('/:id')
     .get(restrict(),method.getSeller)
     .patch(restrict('admin','seller'),method.patchSeller)

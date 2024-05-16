@@ -165,6 +165,36 @@ const patchSeller = async (req,res)=>{
 }
 
 
+const confirmSeller = async (req,res)=>{
+
+    const {id:SellerId} = req.params
+
+    try{
+
+      const seller = await Seller.findOneAndUpdate({_id:SellerId},{sellerStatus :'verified'},{
+          new: true ,
+          runValidators : true
+      })
+  
+      if(!seller){
+          return res.status(404).json({message:`Could't find any seller`, data:[]})
+      }
+  
+      const formattedSeller = {
+          _id: seller._id,
+          userId: seller.userId,
+          businessName: seller.businessName,
+          sellerStatus :seller.sellerStatus
+      }
+  
+      res.status(200).json({message:`Seller was confirmed successfully !!`, data:formattedSeller})
+  }
+catch(error){
+  return res.status(500).json({ message: 'Failed to confirm Seller !!',data:null, error: error.message })
+}
+}
+
+
 const getSellerProducts = async (req, res) => {
     let { id: SellerId } = req.params;
     try {
@@ -206,4 +236,4 @@ const getSellerOrders = async (req, res) => {
     }
 };
 
-module.exports={getAllSellers,getSeller,patchSeller,deleteSeller,getSellerProducts,getSellerOrders}
+module.exports={getAllSellers,getSeller,patchSeller,deleteSeller,getSellerProducts,getSellerOrders,confirmSeller}
