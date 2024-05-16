@@ -10,7 +10,7 @@ router.post('/register/client', restrict('client') ,method.registerClient);
 router.post('/register/seller', restrict('seller') , upload.fields([{ name: 'identityCard' }, { name: 'additionalInformation' }]) , method.registerSeller);
 router.get('/userinfo', restrict() ,method.userinfo);
 
-router.post('/verify/:id', method.verifyUser);
+router.get('/verify/:id', method.verifyUser);
 
 router.post('/login', method.loginUser);
 router.get('/logout', method.logoutUser);

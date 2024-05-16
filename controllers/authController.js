@@ -44,11 +44,11 @@ const registerUser = async (req, res) => {
 
           const mailOptions = {
             from: process.env.SMTP_USER,
-            to: "amjedbellir03@gmail.com",
+            to: user.email,
             subject: 'Email Verification',
             html: `<h1>Wellcome to souqkantra</h1>
                     <br/>
-                    <p>click this <a href='${process.env.SERVER_URL+'/api/v1/auth/verify/'+user._id}'>LINK</a> to confim your account !! </p>
+                    <p>click this <a href='${process.env.SERVER_URL+'/api/v1/auth/verify/'+user._id}'>LINK</a> to confirm your account !! </p>
             `,
           };
 
