@@ -36,11 +36,20 @@ const getNotification = async(req,res)=>{
     }
 }
 
-const postNotification = async (req,res)=>{
-    
+
+const deleteNotification = async (req,res)=>{
+        let {id:NotId} = req.params
+
+    try{
+        const notif = await Notif.findOneAndDelete({ _id: NotId })
+        if(!notif) return res.status(404).json({message:`Could not find any notfication with this id`, error:'notification does not exist', data:null})
+        return res.status(200).json({message:`notification was removed successfully !!`, data:notif})  
+    }
+    catch(error){
+    return res.status(500).json({ message: 'Failed to delete notification !!' , data:null , error: error.message })
+    }
+
 }
 
-const deleteNotification = async (req,res)=>{}
 
-
-module.exports={postNotification,getManyNotifications,getNotification,deleteNotification}
+module.exports={getManyNotifications,getNotification,deleteNotification}
