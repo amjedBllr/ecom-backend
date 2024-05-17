@@ -7,7 +7,7 @@ const orderSchema = mongoose.Schema({
   sellerId: { type: String, required: true },
   orderDate: { type: Date, default: Date.now },
   shippingAddress: { type: String, required: true },
-  paymentMethod: { type: String, enum:['creditCard','paypal','edahabia'] ,required: true },
+  paymentMethod: { type: String, enum:['creditCard','paypal','edahabia','cod'] ,required: true },
   orderStatus: { type: String, enum:['pending','processing','In Transit','shipped','delivered','cancelled','returned','refunded'] , default:'pending'},
   quantity: { type: Number, required: true },
   size: String,
