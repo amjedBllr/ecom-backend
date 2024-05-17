@@ -29,7 +29,7 @@ const reviews = require('./routes/reviewRoute.js')
 const notifications = require('./routes/notificationRoute.js')
 const questions = require('./routes/questionRoute.js')
 const reports = require('./routes/reportRoute.js')
-const admins = require('./routes/adminRoute.js')
+const admins = require('./routes/adminRoute.js')...
 */
 
 const app = express()
