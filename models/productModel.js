@@ -11,7 +11,7 @@ const productSchema = mongoose.Schema({
   onDiscount: { type: Boolean, default: false },
   discountedPrice: Number,
   quantityAvailable: Number,
-  availabilityStatus: {type : String , enum:['available','unavailable'] , default:'unavailable'},
+  availabilityStatus: {type : String , enum:['available','unavailable'] , default:'available'},
   category: { type: String, required: true },
   categoryType: { type: String, required: true },
   creationDate: { type: Date, default: Date.now },

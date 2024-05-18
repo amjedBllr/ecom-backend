@@ -108,9 +108,24 @@ const postProduct = async (req, res) => {
 
         const { sellerId, ...data } = productData;
 
+        let colors = data.colors || null
+        let sizes = data.sizes || null
+        let dimensions = data.dimensions || null
+
+        if(colors) colors = colors.split(';').map(item => item.trim());
+        if(sizes) sizes = sizes.split(';').map(item => item.trim());
+        if(dimensions) dimensions = dimensions.split(';').map(item => item.trim());
+
+        console.log(colors)
+
+        console.log(colors)
+
         const newData = {
             sellerId: seller._id,
             ...data,
+            colors:colors,
+            sizes:sizes,
+            dimensions:dimensions,
             photos: photos
         };
 
