@@ -46,10 +46,23 @@ const registerUser = async (req, res) => {
             from: process.env.SMTP_USER,
             to: email,
             subject: 'Email Verification',
-            html: `<h1>Wellcome to souqkantra</h1>
-                    <br/>
-                    <p>click this <a href='${process.env.SERVER_URL+'/api/v1/auth/verify/'+user._id}'>LINK</a> to confirm your account !! </p>
-            `,
+            html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e2e2; border-radius: 10px;">
+              <div style="text-align: center;">
+                <img src="https://via.placeholder.com/150" alt="Logo" style="width: 150px; margin-bottom: 20px;">
+              </div>
+              <h1 style="color: #333; text-align: center;">Welcome to SouqKantra!</h1>
+              <p style="font-size: 16px; color: #555;">Dear User,</p>
+              <p style="font-size: 16px; color: #555;">Thank you for registering with SouqKantra. To complete your registration, please click the link below to verify your email address:</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="${process.env.SERVER_URL}/api/v1/auth/verify/${user._id}" style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+              </div>
+              <p style="font-size: 16px; color: #555;">If you did not register for this account, please ignore this email.</p>
+              <p style="font-size: 16px; color: #555;">Best Regards,<br>SouqKantra Team</p>
+              <hr style="border-top: 1px solid #e2e2e2;">
+              <p style="font-size: 12px; color: #999; text-align: center;">&copy; 2024 SouqKantra. All rights reserved.</p>
+            </div>
+          `,
           };
 
           transporter.sendMail(mailOptions)

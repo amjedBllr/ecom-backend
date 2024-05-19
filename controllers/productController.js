@@ -116,9 +116,6 @@ const postProduct = async (req, res) => {
         if(sizes) sizes = sizes.split(';').map(item => item.trim());
         if(dimensions) dimensions = dimensions.split(';').map(item => item.trim());
 
-        console.log(colors)
-
-        console.log(colors)
 
         const newData = {
             sellerId: seller._id,
