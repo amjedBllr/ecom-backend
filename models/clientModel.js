@@ -11,7 +11,7 @@ const clientSchema = mongoose.Schema({
   shippingAddress: { type : String , required: true},
   secondaryShippingAddress: String,
   creditCardNumber: String,
-  paypalNumber: String,
+  paypalEmail: String,
   edahabiaNumber: String,
   loyaltyPoints: Number
 });

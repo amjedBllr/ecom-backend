@@ -13,7 +13,7 @@ const sellerSchema = mongoose.Schema({
   paypalActivity: {type : Boolean , default: false},
   edahabiaActivity: {type : Boolean , default: false},
   creditCardNumber: String,
-  paypalNumber: String,
+  paypalEmail: String,
   edahabiaNumber: String,
   commerceRegisterNumber: String,
   identityCard: {type : String , required: true},
