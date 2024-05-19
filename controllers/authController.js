@@ -79,10 +79,6 @@ const registerUser = async (req, res) => {
 const registerClient = async (req, res) => {
 
     try {
-        const {
-            fullName,phoneNumber,DeliveryAddress,paymentAccountNumber,paymentAccountType
-        } = req.body
-
         const client = await Client.findOne({ userId: req.user._id});
         const seller = await Client.findOne({ userId: req.user._id });
 
@@ -92,15 +88,7 @@ const registerClient = async (req, res) => {
 
         //? add client to database
         else{
-            let client = await Client.create({
-                userId:req.user._id,
-                fullname: fullName,
-                phoneNumber: phoneNumber,
-                shippingAddress: DeliveryAddress,
-                creditCardNumber: ((paymentAccountType=='creditCard')?paymentAccountNumber:null),
-                paypalNumber: ((paymentAccountType=='paypal')?paymentAccountNumber:null),
-                edahabiaNumber: ((paymentAccountType=='edahabia')?paymentAccountNumber:null),
-            })
+            let client = await Client.create({...req.body,userId: req.user._id,})
 
             res.status(201).json({ message: `client ${client._id} registered successfully !!` , data : {client} })
         }
