@@ -17,7 +17,7 @@ const registerUser = async (req, res) => {
 
         //?check if the email already exists in the database
         let Email = await User.findOne({email:email})
-        if(Email) {return res.json({ message: `Could not register the user`, error: `this email is already attached to a user !!` })} 
+        if(Email) {return res.status(401).json({ message: `Could not register the user`, error: `this email is already attached to a user !!` })} 
 
         //? Generate salt and hash password
         const saltRounds = 10
@@ -49,7 +49,7 @@ const registerUser = async (req, res) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e2e2; border-radius: 10px;">
               <div style="text-align: center;">
-                <img src="https://via.placeholder.com/150" alt="Logo" style="width: 150px; margin-bottom: 20px;">
+                <img src="https://whatemoji.org/wp-content/uploads/2020/07/Waving-Hand-Emoji.png" alt="Logo" style="width: 150px; margin-bottom: 20px;">
               </div>
               <h1 style="color: #333; text-align: center;">Welcome to SouqKantra!</h1>
               <p style="font-size: 16px; color: #555;">Dear User,</p>
