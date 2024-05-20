@@ -49,12 +49,14 @@ const postCartItem = async (req,res)=>{
 
         const client = await Client.findOne({userId : userId})
 
+        const product = await Product.findOne({ _id: ItemData.productId });
         //?deleting client-id w total price mnah dok nriglhm hna , gholta la
 
         let {clientId, ...data} = ItemData
 
         data = {
             clientId : client._id ,
+            totalPrice : ItemData.quantity*product.price,
             ...data 
         }
     

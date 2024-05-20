@@ -42,7 +42,6 @@ const getOrder = async (req, res) => {
 const postOrder = async (req, res) => {
     const userId = req.user._id;
     const orderData = req.body;
-
     try {
         const client = await Client.findOne({ userId: userId });
         const product = await Product.findOne({ _id: orderData.productId });
@@ -63,6 +62,8 @@ const postOrder = async (req, res) => {
             totalPrice: price * orderData.quantity,
             ...orderData
         };
+
+        console.log(data)
 
         const order = await Order.create(data);
 

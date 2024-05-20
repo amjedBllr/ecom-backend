@@ -9,6 +9,7 @@ const cartItemSchema = mongoose.Schema({
   size: String,
   color: String,
   dimension: String,
+  totalPrice:{ type: Number, required: true },
   isConfirmed: { type: Boolean , default:false }
 });
 
