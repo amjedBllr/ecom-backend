@@ -7,42 +7,43 @@ const uploadImage = require('../utils/firebaseFIleSystem.js');
 
 //*get many Products function
 const getManyProducts = async (req, res) => {
-    
-    const {name, category, type, discount} = req.query 
+    const { name, category, type, discount, page , limit = 10 } = req.query;
 
-    let conditions = {}
+    let conditions = {};
 
-    if(name){
-        if(name!=="" && name!==" " && name!==null && name!==undefined ) conditions = { ...conditions, productName: { $regex: name, $options: 'i' } };
-    }
-    
-    if(category){
-        if(category!=="" && category!==" " && category!==null && category!==undefined ) conditions = { ...conditions, category: { $regex: category, $options: 'i' } };
-
-        //?type could not be defined if the category wasn't !!
-        if(type){
-            if(type!=="" && type!==" " && type!==null && type!==undefined ) conditions = { ...conditions, categoryType: { $regex: type, $options: 'i' } };
-        } 
+    if (name) {
+        if (name.trim()) conditions = { ...conditions, productName: { $regex: name, $options: 'i' } };
     }
 
-    if(discount){
-        if(discount!==null && discount!==undefined ) conditions = { ...conditions, onDiscount : discount };
+    if (category) {
+        if (category.trim()) conditions = { ...conditions, category: { $regex: category, $options: 'i' } };
+
+        // ?type could not be defined if the category wasn't !!
+        if (type) {
+            if (type.trim()) conditions = { ...conditions, categoryType: { $regex: type, $options: 'i' } };
+        }
     }
+
+    if (discount !== null && discount !== undefined) {
+        conditions = { ...conditions, onDiscount: true };
+    }
+
+    const pageNumber = parseInt(page, 1);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
 
     try {
-        const products = await Product.find(conditions)
+        const products = await Product.find(conditions).skip(skip).limit(pageSize);
 
-        if(products.length<=0){
-            return res.status(404).json({message:`Could't find any Products`, data:[]})
+        if (products.length <= 0) {
+            return res.status(404).json({ message: `Couldn't find any Products`, data: [] });
         }
 
-        res.status(200).json({message:`Products was fetched successfully !!`, data:products})
-
+        res.status(200).json({ message: `Products were fetched successfully !!`, data: products });
     } catch (error) {
-        return res.status(500).json({ message: 'Failed to fetch products !!' , data:null , error: error.message })
+        return res.status(500).json({ message: 'Failed to fetch products !!', data: null, error: error.message });
     }
-
-}
+};
 
 
 //* get one Product function 
