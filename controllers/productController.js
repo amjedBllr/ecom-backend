@@ -7,20 +7,19 @@ const uploadImage = require('../utils/firebaseFIleSystem.js');
 
 //*get many Products function
 const getManyProducts = async (req, res) => {
-    const { name, category, type, discount, page , limit = 10 } = req.query;
+    const { name, category, type, discount, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
 
     let conditions = {};
 
-    if (name) {
-        if (name.trim()) conditions = { ...conditions, productName: { $regex: name, $options: 'i' } };
+    if (name && name.trim()) {
+        conditions = { ...conditions, productName: { $regex: name, $options: 'i' } };
     }
 
-    if (category) {
-        if (category.trim()) conditions = { ...conditions, category: { $regex: category, $options: 'i' } };
+    if (category && category.trim()) {
+        conditions = { ...conditions, category: { $regex: category, $options: 'i' } };
 
-        // ?type could not be defined if the category wasn't !!
-        if (type) {
-            if (type.trim()) conditions = { ...conditions, categoryType: { $regex: type, $options: 'i' } };
+        if (type && type.trim()) {
+            conditions = { ...conditions, categoryType: { $regex: type, $options: 'i' } };
         }
     }
 
@@ -28,22 +27,39 @@ const getManyProducts = async (req, res) => {
         conditions = { ...conditions, onDiscount: true };
     }
 
-    const pageNumber = parseInt(page, 1);
-    const pageSize = parseInt(limit, 10);
+    if (minPrice !== undefined) {
+        conditions = { ...conditions, price: { $gte: minPrice } };
+    }
+    
+    if (maxPrice !== undefined) {
+        conditions = { ...conditions, price: { $lte: maxPrice } };
+    }
+    
+
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * pageSize;
 
     try {
         const products = await Product.find(conditions).skip(skip).limit(pageSize);
+        const totalProducts = await Product.countDocuments(conditions);
 
         if (products.length <= 0) {
             return res.status(404).json({ message: `Couldn't find any Products`, data: [] });
         }
 
-        res.status(200).json({ message: `Products were fetched successfully !!`, data: products });
+        res.status(200).json({
+            message: `Products were fetched successfully !!`,
+            data: products,
+            currentPage: pageNumber,
+            totalPages: Math.ceil(totalProducts / pageSize),
+            totalProducts: totalProducts
+        });
     } catch (error) {
         return res.status(500).json({ message: 'Failed to fetch products !!', data: null, error: error.message });
     }
 };
+
 
 
 //* get one Product function 
