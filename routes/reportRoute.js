@@ -5,7 +5,7 @@ const restrict = require('../middlewares/authorization.js')
 const router = express.Router()
 
 router.route('/').all(restrict()).get(method.getAllReports).post(method.postOneReport)
-router.route('/:id').all(restrict()).get(method.getOneReport).delete(method.OneReport)
+router.route('/:id').all(restrict()).get(method.getOneReport).delete(method.deleteOneReport)
 
 
 module.exports=router

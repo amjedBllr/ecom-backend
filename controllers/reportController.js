@@ -52,4 +52,4 @@ const deleteOneReport = async (req, res) => {
 };
 
 
-module.exports = { getAllReports, getOneReport, postOneReport, patchOneReport, deleteOneReport };
+module.exports = { getAllReports, getOneReport, postOneReport, deleteOneReport };
