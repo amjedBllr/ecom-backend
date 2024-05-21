@@ -19,7 +19,9 @@ const getAllUsers = async (req, res) => {
             username: user.username ? user.username : null,
             email: user.email,
             role: user.role,
-            registrationDate: user.registrationDate
+            registrationDate: user.registrationDate,
+            pfp:user.pfp,
+            accountStatus : user.accountStatus
         }));
 
         res.status(200).json({message : 'Users were fetched successfully !!' , data: formattedUsers });
@@ -38,10 +40,7 @@ const getUser = async(req,res)=>{
     try{
 
         let {id:UserId} = req.params
-        let currentUser = req.user._id
         let role = req.user.role
-
-        if(((['client', 'seller'].includes(role) && (UserId == currentUser)) || role === 'admin')){
 
             const user = await User.findOne({_id:UserId})
 
@@ -68,10 +67,7 @@ const getUser = async(req,res)=>{
             }
 
             else return res.status(200).json({message:`User was fetched successfully !!`, data:formattedUser})
-        }
-        else{
-            return res.status(401).json({ message: 'Access denied !!', error: `user is not authorized to ${req.method} other users data` });
-        }
+        
 
         
     }
@@ -160,6 +156,7 @@ const patchUser = async (req,res)=>{
             if(!user){
                 return res.status(404).json({message:`Could't find any user`, data:[]})
             }
+
     
             const formattedUser = {
                 _id: user._id,

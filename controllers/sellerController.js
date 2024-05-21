@@ -52,6 +52,7 @@ const getSeller = async (req, res) => {
             paypalActivity: seller.paypalActivity,
             edahabiaActivity: seller.edahabiaActivity,
             averageRating: Seller.averageRating,
+            sellerStatus : Seller.sellerStatus,
             totalReviews: Seller.totalReviews,
         };
 

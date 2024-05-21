@@ -104,7 +104,7 @@ const patchOrder = async (req, res) => {
 
             if (samePerson) {
                 const { orderStatus, ...other } = req.body;
-
+                
                 const updatedOrder = await Order.findOneAndUpdate({ _id: OrderId }, { orderStatus }, { new: true, runValidators: true });
 
                 return res.status(200).json({ message: `Order was patched successfully !!`, data: updatedOrder });
