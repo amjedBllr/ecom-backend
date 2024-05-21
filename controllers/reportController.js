@@ -1,64 +1,55 @@
-const Task = require('../models/reportModel.js')
+const Report = require('../models/reportModel.js');
 
-const getAllTasks = async (req,res)=>{
-    try{
-        const tasks = await Task.find({})
-        res.status(201).json({tasks})}
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const getOneTask = async(req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOne({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const postOneTask = async (req,res)=>{
-    try{
-    let task = await Task.create(req.body)
-    res.status(201).json({task})
-    console.log(`new task added !!`)
-    }
-    catch(err){
-        res.status(500).json({msg:err})
-    }
-}
-const deleteOneTask = async (req,res)=>{
-    try{
-        let {id:taskId} = req.params
-        const task = await Task.findOneAndDelete({_id:taskId})
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
-        }
-        else res.status(201).json({task})
-    }
-    catch(err){
-        res.status(500).json({msg : err})
-    }
-}
-
-const patchOneTask = async (req,res)=>{
+const getAllReports = async (req, res) => {
     try {
-        const {id:taskId} = req.params
-        const task = await Task.findOneAndUpdate({_id:taskId},req.body,{
-            new: true ,
-            runValidators : true
-        })
-        if(!task){
-            res.status(404).json({msg:`there ain't no task with the id of : ${taskId}`})
+        const reports = await Report.find({});
+        if (reports.length === 0) {
+            return res.status(404).json({ message: 'No reports exists currently !!' , error:'could not find any report !' , data:[]});
         }
-        else res.status(201).json({task})
-    } catch (err) {
-        res.status(500).json({msg : err})
-    }
-}
 
-module.exports={getAllTasks,getOneTask,postOneTask,patchOneTask,deleteOneTask}
+        return res.status(200).json({message : 'reports were fetched successfully !!' , data: reports });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch reports',data:null, error: error.message });
+    }
+};
+
+const getOneReport = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const report = await Report.findOne({_id:id});
+        if (!report) {
+            return res.status(404).json({ message: 'Could not find a report with this id !!' , error:'could not find any report !' , data:[]});
+        }
+        return res.status(200).json({message : 'report were fetched successfully !!' , data: report });
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to fetch report',data:null, error: error.message });
+    }
+};
+
+const postOneReport = async (req, res) => {
+    const currentUser = req.user;
+    const data = {...req.body,userId:currentUser._id};
+  
+    try {
+        const report = await Report.create(data)
+        return res.status(201).json({message:`Report was added successfully !!`, data:data})  
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to add report !!' , data:null , error: error.message })
+    }
+};
+
+const deleteOneReport = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedReport = await Report.findByIdAndDelete(id);
+        if (!deletedReport) {
+            return res.status(404).json({ message: 'Could not find a report with this id !!' , error:'could not find any report !' , data:[]});
+        }
+        return res.status(201).json({message:`Report was deleted successfully !!`, data:deletedReport}) 
+    } catch (error) {
+        return res.status(500).json({ message: 'Failed to delete report !!' , data:null , error: error.message })
+    }
+};
+
+
+module.exports = { getAllReports, getOneReport, postOneReport, patchOneReport, deleteOneReport };

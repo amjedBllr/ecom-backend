@@ -25,10 +25,10 @@ const cartItems = require('./routes/cartItemRoute.js')
 const orders = require('./routes/orderRoute.js')
 const reviews = require('./routes/reviewRoute.js')
 const notifications = require('./routes/notificationRoute.js')
+const reports = require('./routes/reportRoute.js')
 
 /*
 const questions = require('./routes/questionRoute.js')
-const reports = require('./routes/reportRoute.js')
 const admins = require('./routes/adminRoute.js')...
 */
 
@@ -62,6 +62,7 @@ app.use('/api/v1/cart-items',cartItems)
 app.use('/api/v1/orders',orders)
 app.use('/api/v1/reviews',reviews)
 app.use('/api/v1/notifications',notifications)
+app.use('/api/v1/reports',reports)
 
 app.get('/userinfo',(req,res)=>{
     res.json(`${req.user}`)
