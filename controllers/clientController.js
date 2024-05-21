@@ -49,7 +49,7 @@ const getClient = async (req, res) => {
             loyaltyPoints: client.loyaltyPoints
         };
 
-        if (role == "client" || role == "admin") {
+        if (role === "client" || role === "admin") {
             formattedclient = { ...formattedclient,gender: client.gender,phoneNumber:client.phoneNumber,birthday:client.birthday,creditCardNumber:client.creditCardNumber,paypalNumber:client.paypalNumber,edahabiaNumber:client.edahabiaNumber};
         }
 
