@@ -52,7 +52,7 @@ const getSeller = async (req, res) => {
             paypalActivity: seller.paypalActivity,
             edahabiaActivity: seller.edahabiaActivity,
             averageRating: Seller.averageRating,
-            sellerStatus : Seller.sellerStatus,
+            sellerStatus: seller.sellerStatus,
             totalReviews: Seller.totalReviews,
         };
 
@@ -63,7 +63,7 @@ const getSeller = async (req, res) => {
         if (role == "seller") {
             formattedSeller = { ...formattedSeller, commerceRegisterNumber: seller.commerceRegisterNumber, creditCardNumber: seller.creditCardNumber, paypalNumber: seller.paypalNumber, edahabiaNumber: seller.edahabiaNumber };
         }
-
+        
         return res.status(200).json({ message: `Seller was fetched successfully !!`, data: formattedSeller });
     } catch (error) {
         return res.status(500).json({ message: 'Failed to fetch Seller !!', data: null, error: error.message });
